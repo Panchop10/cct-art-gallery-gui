@@ -27,6 +27,6 @@ package com.cct.artgallery.auth;
  *
  * @author Francisco Olivares
  */
-public class AuthModel {
+public class LoginModel {
     
 }

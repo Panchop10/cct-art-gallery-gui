@@ -30,13 +30,12 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.Insets;
-import java.awt.Rectangle;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Box;
@@ -47,21 +46,27 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.border.EmptyBorder;
 
 /**
  *
  * @author Francisco Olivares
  */
-public class AuthView{
+public class LoginView{
     
-    public AuthView() {
+    private JFrame window;
+    private JTextField loginEmail;
+    private JTextField loginPassword;
+    private AuthController controllerListener;
+    private JLabel errorLabel;
+    
+    public LoginView(AuthController controller) {
+        this.controllerListener = controller;
+        
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            JFrame window = new JFrame("CCT Art Gallery");
+            window = new JFrame("CCT Art Gallery");
             
             //Set up top bar with custom buttons
             TopBar topBar = new TopBar(window);
@@ -107,10 +112,20 @@ public class AuthView{
             loginTitle.setPreferredSize(new Dimension(220, 40));
             loginTitle.setMaximumSize(new Dimension(220, 40));
             loginPanel.add(loginTitle);
-            loginPanel.add(Box.createRigidArea(new Dimension(0, 50)));
+            loginPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            
+            //Create Error JLabel
+            errorLabel = new JLabel("", JLabel.CENTER);
+            errorLabel.setForeground(Color.RED);
+            errorLabel.setFont(roboto.deriveFont(Font.PLAIN, 10f));
+            errorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            errorLabel.setPreferredSize(new Dimension(200, 20));
+            errorLabel.setMaximumSize(new Dimension(200, 20));
+            loginPanel.add(errorLabel);
+            loginPanel.add(Box.createRigidArea(new Dimension(0, 20)));
             
             //Create and add email JTextField            
-            JTextField loginEmail = new JTextField(" Email");
+            loginEmail = new JTextField(" Email");
             loginEmail.setForeground(Color.GRAY);
             loginEmail.addFocusListener(new FocusListener() {
                 @Override
@@ -135,7 +150,7 @@ public class AuthView{
             loginPanel.add(Box.createRigidArea(new Dimension(0, 20)));
             
             //Create and add password JTextField            
-            JTextField loginPassword = new JTextField(" Password");
+            loginPassword = new JTextField(" Password");
             loginPassword.setForeground(Color.GRAY);
             loginPassword.addFocusListener(new FocusListener() {
                 @Override
@@ -162,46 +177,85 @@ public class AuthView{
             //Create and add Login button
             URL sumitButton = getClass().getClassLoader().getResource("images/login_submit.png");
             final JButton loginSubmit = new JButton(new ImageIcon(sumitButton));
-            loginSubmit.setBorderPainted(false);
-            
+            loginSubmit.setBorderPainted(false);            
             loginSubmit.setPreferredSize(new Dimension(90, 40));
             loginSubmit.setMaximumSize(new Dimension(90, 40)); 
             loginSubmit.setAlignmentX(Component.CENTER_ALIGNMENT);
             loginPanel.add(loginSubmit);
             
-            //Create and add register button
-            JLabel loginRegister = new JLabel("Need an account?");
-            loginRegister.setFont(roboto.deriveFont(Font.PLAIN, 10f));
-            loginRegister.setForeground(Color.GRAY);
+            //Add listener to login submit button
+            loginSubmit.addActionListener((ActionListener) controllerListener);
+            loginSubmit.setActionCommand("loginSubmit");
             
-            loginRegister.setPreferredSize(new Dimension(80, 20));
-            loginRegister.setMaximumSize(new Dimension(80, 20)); 
+            //Create and add register button
+            JButton loginRegister = new JButton("Need an account?");
+            loginRegister.setBorderPainted(false);
+            loginRegister.setFont(roboto.deriveFont(Font.PLAIN, 10f));
+            loginRegister.setForeground(Color.GRAY);            
+            loginRegister.setPreferredSize(new Dimension(130, 20));
+            loginRegister.setMaximumSize(new Dimension(130, 20)); 
             loginRegister.setAlignmentX(Component.CENTER_ALIGNMENT);
             loginPanel.add(loginRegister);
             
-            
-
-            
-            
-            
-
-
+            //Add listener to login submit button
+            loginRegister.addActionListener((ActionListener) controllerListener);
+            loginRegister.setActionCommand("loginRegister");
+   
             //Add login panel to content panel with custom margin top
             contentPanel.add(Box.createRigidArea(new Dimension(0, 80)));
             //contentPanel.add(l1);
             contentPanel.add(loginPanel);
             contentPanel.add(Box.createRigidArea(new Dimension(0, 80)));    
 
-            
-            
-
-
-
             window.validate();
             window.repaint();
             
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-            Logger.getLogger(AuthView.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LoginView.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }    
+    }
+
+    /**
+     * 
+     * @return HashMap with the email and password entered in the JTextField
+     * of the view.
+     */
+    public Map<String, String> getData(){
+        Map<String, String> data = new HashMap<>();
+        data.put("email", loginEmail.getText());
+        data.put("password", loginPassword.getText());
+        
+        return data;
+    }
+    
+    /**
+     * 
+     * @param message Receive an String and shows during 3 seconds a JLabel 
+     * with the message as an error.
+     */
+    public void showError(String message){
+        new Thread(() -> {
+            errorLabel.setText(message);
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(LoginView.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            errorLabel.setText("");
+        }).start();
+    }
+    
+    /**
+     * Hide JFrame by setting visible = false
+     */
+    public void hide(){
+        window.setVisible(false);
+    }
+    
+    /**
+     * Show JFrame by setting visible = true
+     */
+    public void show(){
+        window.setVisible(true);
+    }
 }

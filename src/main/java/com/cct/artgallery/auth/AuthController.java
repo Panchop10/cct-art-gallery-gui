@@ -25,6 +25,9 @@ package com.cct.artgallery.auth;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  *
@@ -32,13 +35,62 @@ import java.awt.event.ActionListener;
  */
 public class AuthController implements ActionListener{
     
+    private LoginView loginView;
+    private RegisterView registerView;
+    
     public AuthController(){
-        new AuthView();
+        loginView = new LoginView(this);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        switch(e.getActionCommand()) {
+            case "loginSubmit":
+                login();
+                break;
+            case "loginRegister":
+                openRegister();
+                break;
+            case "registerToLogin":
+                registerToLogin();
+                break;
+            default:
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+    }
+    
+    private void openRegister(){
+        loginView.hide();
+        registerView = new RegisterView(this);
+    }
+    
+    private void registerToLogin(){
+        registerView.dispose();
+        loginView.show();
+    }
+    
+    private void login(){
+        Map<String, String> data = loginView.getData();
+        String userEmail = data.get("email");
+        String userPassword = data.get("password");
+        
+        if(userEmail.equals(" Email") || userPassword.equals(" Password")){
+            loginView.showError("Email or password incorrect.");
+        }
+        else{
+            
+        }
+        
+//        for (Map.Entry<String, String> entry : data.entrySet()) {
+//            //String key = entry.getKey();
+//            //HashMap value = entry.getValue();
+//            System.out.println(entry.getValue());
+//            // do what you have to do here
+//            // In your case, another loop.
+//            if(entry.getValue().equals(" Email") || entry.getValue().equals(" Password")){
+//                loginView.showError("Email or password incorrect.");
+//            }            
+//        }
     }
     
 }
