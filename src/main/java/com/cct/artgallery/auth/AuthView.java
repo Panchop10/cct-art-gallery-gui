@@ -23,68 +23,185 @@
  */
 package com.cct.artgallery.auth;
 
-import java.awt.event.ActionListener;
+import com.cct.artgallery.utils.CustomFonts;
+import com.cct.artgallery.utils.TopBar;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.io.IOException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.border.EmptyBorder;
 
 /**
  *
  * @author Francisco Olivares
  */
-public class AuthView  extends JFrame{
+public class AuthView{
     
-    /**
-     * @param tf1       Manage text field
-     */
-    
-    private JTextField tf1;
-    private JTextField tf2;
-    private JTextField tf3;
-    private AuthController controllerInternalRef; 
-    
-    public AuthView(AuthController controller){
-        this.controllerInternalRef = controller;
-        attributesSetter();
-        components();
-        validation();
-        
-    }
-    
-    // Separating my attributes in method. Just to make more neat
-    private void attributesSetter(){
-        this.setTitle("CCT Art Gallery");
-        this.setSize(800,500);
-        this.setLocationRelativeTo(null);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Already there
-        this.setUndecorated (true);
-        this.setResizable(false);
-        this.setVisible (true); // move setVisible to the end
-    }
-    
-    // Separating components in method. Just to make it more neat
-    private void components(){
-        JPanel p = new JPanel();
-        this.add(p);
-        
-        tf1 = new JTextField(20);
-        tf2 = new JTextField(20);
-        tf3 = new JTextField(20);
-        JButton button = new JButton("Ener!");
-        button.addActionListener((ActionListener) controllerInternalRef);
-        button.setActionCommand("b");
-        
-        p.add(tf1);
-        p.add(tf2);
-        p.add(button);
-        p.add(tf3);
-        
-    }
-    
-    private void validation(){
-        this.validate();
-        this.repaint();
-    }
-    
+    public AuthView() {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            JFrame window = new JFrame("CCT Art Gallery");
+            
+            //Set up top bar with custom buttons
+            TopBar topBar = new TopBar(window);
+            JPanel topPanel = topBar.getTopBar();
+            
+            //JFrame properties
+            window.add(BorderLayout.NORTH, topPanel);
+            window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            window.setSize(800, 500);
+            window.setLocationRelativeTo(null);
+            window.setUndecorated(true);
+            window.setVisible(true);
+            
+            //Set background image to JFrame creating a JPanel
+            URL login = getClass().getClassLoader().getResource("images/login.jpeg");
+            JLabel contentPanel=new JLabel(new ImageIcon(login));
+            window.add(contentPanel);
+            contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+            
+            
+            //Create Panel with login form 
+            JPanel loginPanel = new JPanel();
+            loginPanel.setBackground(Color.WHITE);
+            loginPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            loginPanel.setPreferredSize(new Dimension(300, 400));
+            loginPanel.setMaximumSize(new Dimension(300, 400));
+            loginPanel.setLayout(new BoxLayout(loginPanel, BoxLayout.Y_AXIS));
+            
+            //Call Roboto Font
+            CustomFonts customFont = new CustomFonts();
+            Font roboto = customFont.getRoboto();
+            
+            
+            //Add Form inside login panel
+            
+            //Create and and Title
+            JLabel loginTitle = new JLabel("Log in", JLabel.CENTER);
+            loginTitle.setForeground(Color.WHITE);
+            loginTitle.setBackground(new Color(93, 188, 210));
+            loginTitle.setFont(roboto.deriveFont(Font.PLAIN, 16f));
+            loginTitle.setOpaque(true);
+            loginTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+            loginTitle.setPreferredSize(new Dimension(220, 40));
+            loginTitle.setMaximumSize(new Dimension(220, 40));
+            loginPanel.add(loginTitle);
+            loginPanel.add(Box.createRigidArea(new Dimension(0, 50)));
+            
+            //Create and add email JTextField            
+            JTextField loginEmail = new JTextField(" Email");
+            loginEmail.setForeground(Color.GRAY);
+            loginEmail.addFocusListener(new FocusListener() {
+                @Override
+                public void focusGained(FocusEvent e) {
+                    if (loginEmail.getText().equals(" Email")) {
+                        loginEmail.setText("");
+                        loginEmail.setForeground(Color.BLACK);
+                    }
+                }
+                @Override
+                public void focusLost(FocusEvent e) {
+                    if (loginEmail.getText().isEmpty()) {
+                        loginEmail.setForeground(Color.GRAY);
+                        loginEmail.setText(" Email");
+                    }
+                }
+                });           
+            loginEmail.setAlignmentX(Component.CENTER_ALIGNMENT);
+            loginEmail.setPreferredSize(new Dimension(200, 30));
+            loginEmail.setMaximumSize(new Dimension(200, 30));            
+            loginPanel.add(loginEmail);
+            loginPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+            
+            //Create and add password JTextField            
+            JTextField loginPassword = new JTextField(" Password");
+            loginPassword.setForeground(Color.GRAY);
+            loginPassword.addFocusListener(new FocusListener() {
+                @Override
+                public void focusGained(FocusEvent e) {
+                    if (loginPassword.getText().equals(" Password")) {
+                        loginPassword.setText("");
+                        loginPassword.setForeground(Color.BLACK);
+                    }
+                }
+                @Override
+                public void focusLost(FocusEvent e) {
+                    if (loginPassword.getText().isEmpty()) {
+                        loginPassword.setForeground(Color.GRAY);
+                        loginPassword.setText(" Password");
+                    }
+                }
+                });           
+            loginPassword.setAlignmentX(Component.CENTER_ALIGNMENT);
+            loginPassword.setPreferredSize(new Dimension(200, 30));
+            loginPassword.setMaximumSize(new Dimension(200, 30));            
+            loginPanel.add(loginPassword);
+            loginPanel.add(Box.createRigidArea(new Dimension(0, 20)));       
+            
+            //Create and add Login button
+            URL sumitButton = getClass().getClassLoader().getResource("images/login_submit.png");
+            final JButton loginSubmit = new JButton(new ImageIcon(sumitButton));
+            loginSubmit.setBorderPainted(false);
+            
+            loginSubmit.setPreferredSize(new Dimension(90, 40));
+            loginSubmit.setMaximumSize(new Dimension(90, 40)); 
+            loginSubmit.setAlignmentX(Component.CENTER_ALIGNMENT);
+            loginPanel.add(loginSubmit);
+            
+            //Create and add register button
+            JLabel loginRegister = new JLabel("Need an account?");
+            loginRegister.setFont(roboto.deriveFont(Font.PLAIN, 10f));
+            loginRegister.setForeground(Color.GRAY);
+            
+            loginRegister.setPreferredSize(new Dimension(80, 20));
+            loginRegister.setMaximumSize(new Dimension(80, 20)); 
+            loginRegister.setAlignmentX(Component.CENTER_ALIGNMENT);
+            loginPanel.add(loginRegister);
+            
+            
+
+            
+            
+            
+
+
+            //Add login panel to content panel with custom margin top
+            contentPanel.add(Box.createRigidArea(new Dimension(0, 80)));
+            //contentPanel.add(l1);
+            contentPanel.add(loginPanel);
+            contentPanel.add(Box.createRigidArea(new Dimension(0, 80)));    
+
+            
+            
+
+
+
+            window.validate();
+            window.repaint();
+            
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+            Logger.getLogger(AuthView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }    
 }

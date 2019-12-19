@@ -21,24 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.cct.artgallery.auth;
+package com.cct.artgallery.utils;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Francisco Olivares
+ * Utility class to export fonts
  */
-public class AuthController implements ActionListener{
+public class CustomFonts {
     
-    public AuthController(){
-        new AuthView();
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    /**
+     * 
+     * @return Font Roboto from Google
+     */
+    public Font getRoboto(){
+        
+        Font font;
+        
+        try {            
+            font = Font.createFont(
+                    Font.TRUETYPE_FONT,
+                    getClass().getClassLoader().getResourceAsStream("fonts/Roboto-Regular.ttf")
+            );
+        } catch (FontFormatException | IOException ex) {
+            Logger.getLogger(CustomFonts.class.getName()).log(Level.SEVERE, null, ex);
+            font = new Font("Serif", Font.PLAIN, 12);
+        }
+        
+        return font;
     }
     
 }
