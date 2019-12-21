@@ -41,7 +41,7 @@ import org.json.JSONObject;
  *
  * @author Francisco Olivares
  */
-public class LoginModel {
+public class RegisterModel {
     
     private static HttpURLConnection connection;
     private JSONObject response = new JSONObject();
@@ -53,9 +53,13 @@ public class LoginModel {
      * @return status code of the service login. 
      */
     @SuppressWarnings("NestedAssignment")
-    public int login(Map<String, String> data){
-        String userEmail = data.get("email");
-        String userPassword = data.get("password");
+    public int register(Map<String, String> data){
+        String username = data.get("username");
+        String firstName = data.get("first_name");
+        String lastName = data.get("last_name");
+        String email = data.get("email");
+        String password = data.get("password");
+        String passwordConfirmation = data.get("password_confirmation");
         
         BufferedReader reader;
         String line;
@@ -63,7 +67,7 @@ public class LoginModel {
         
         try {            
             //Create connection and set headers.
-            URL url = new URL(API.LOGIN.getUrl());
+            URL url = new URL(API.REGISTER.getUrl());
             connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setDoInput(true);
@@ -75,10 +79,12 @@ public class LoginModel {
             
             //Create body as JSONObject
             JSONObject jsonData = new JSONObject();
-            jsonData.put("email", "pancho1990@live.cl");
-            jsonData.put("password", "v2oke83j");
-            //jsonData.put("email", userEmail);
-            //jsonData.put("password", userPassword);
+            jsonData.put("username", username);
+            jsonData.put("first_name", firstName);
+            jsonData.put("last_name", lastName);
+            jsonData.put("email", email);
+            jsonData.put("password", password);
+            jsonData.put("password_confirmation", passwordConfirmation);
             
             
             //Send body as JSONObject
@@ -109,10 +115,10 @@ public class LoginModel {
             return(status);
             
         } catch (MalformedURLException ex) {
-            Logger.getLogger(LoginModel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RegisterModel.class.getName()).log(Level.SEVERE, null, ex);
             return(500);
         } catch (IOException ex) {
-            Logger.getLogger(LoginModel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RegisterModel.class.getName()).log(Level.SEVERE, null, ex);
             return(500);
         } finally {
             connection.disconnect();

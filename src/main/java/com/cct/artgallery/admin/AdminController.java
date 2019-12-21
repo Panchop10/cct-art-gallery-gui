@@ -21,26 +21,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.cct.artgallery;
+package com.cct.artgallery.admin;
 
 import com.cct.artgallery.auth.AuthController;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  *
  * @author Francisco Olivares
  */
-public class Main {
+public class AdminController implements ActionListener{
     
-    public Main() {
-        new AuthController();
+    private final AuthController authController;
+    private final AdminView adminView;
+    private final MenuAdmin menu;
+    
+    public AdminController(AuthController parentController){
+        //Open admin view
+        menu = new MenuAdmin(this);
+        adminView = new AdminView(this, menu);
+        authController = parentController;
     }
-    
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        new Main();
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        switch(e.getActionCommand()) {
+            case "artPiecesMenu":
+                menu.setActive(e.getActionCommand());
+                adminView.updateContent(e.getActionCommand());
+                break;
+            case "artistsMenu":
+                menu.setActive(e.getActionCommand());
+                adminView.updateContent(e.getActionCommand());
+                break;
+            case "usersMenu":
+                menu.setActive(e.getActionCommand());
+                adminView.updateContent(e.getActionCommand());
+                break;
+            default:
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
     }
-    
 }

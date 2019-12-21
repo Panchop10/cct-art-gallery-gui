@@ -21,26 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.cct.artgallery;
+package com.cct.artgallery.admin;
 
-import com.cct.artgallery.auth.AuthController;
+import java.awt.Color;
+import java.awt.Dimension;
+import javax.swing.JPanel;
 
 /**
  *
  * @author Francisco Olivares
  */
-public class Main {
+public class ArtistPanel extends JPanel {
     
-    public Main() {
-        new AuthController();
-    }
-    
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        new Main();
+    @SuppressWarnings("OverridableMethodCallInConstructor")
+    public ArtistPanel(AdminController controller){
+        this.setPreferredSize(new Dimension(800, 660));
+        this.setMaximumSize(new Dimension(800, 660));
+        this.setBackground(Color.BLUE);
     }
     
 }

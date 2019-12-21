@@ -21,26 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.cct.artgallery;
-
-import com.cct.artgallery.auth.AuthController;
+package com.cct.artgallery.utils;
 
 /**
  *
  * @author Francisco Olivares
+ * Enum class to store some constants that are used in the software.
  */
-public class Main {
-    
-    public Main() {
-        new AuthController();
+public enum Constant 
+{
+    //Constants used in the API calls.
+    CONNTIMEOUT("5000"),
+    READTIMEOUT("5000");
+ 
+    private final String value;
+ 
+    Constant(String value) {
+        this.value = value;
     }
-    
-    
+ 
     /**
-     * @param args the command line arguments
+     * 
+     * @return value of the content as String. 
      */
-    public static void main(String[] args) {
-        new Main();
+    public String getString() {
+        return value;
     }
     
+     /**
+     * 
+     * @return value of the content parsed as Integer. 
+     */
+    public int getInt(){
+       return Integer.parseInt(value);
+    }
 }

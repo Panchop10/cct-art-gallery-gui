@@ -21,26 +21,64 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.cct.artgallery;
-
-import com.cct.artgallery.auth.AuthController;
+package com.cct.artgallery.utils;
 
 /**
  *
  * @author Francisco Olivares
  */
-public class Main {
+public class UserDetail {
     
-    public Main() {
-        new AuthController();
-    }
-    
+    private static String token;
+    private static String username;
+    private static Boolean admin;
     
     /**
-     * @param args the command line arguments
+     * 
+     * @return token authentication that needs to be used for API calls.
      */
-    public static void main(String[] args) {
-        new Main();
+    public static String getToken(){
+        return token;
+    }
+    
+    /**
+     * 
+     * @param newToken receive new token and store it.
+     */
+    public static void setToken(String newToken){
+        token = newToken;
+    }
+    
+    /**
+     * 
+     * @return username of logged user.
+     */
+    public static String getUsername(){
+        return username;
+    }
+    
+    /**
+     * 
+     * @param newUsername set username for logged user.
+     */
+    public static void setUsername(String newUsername){
+        username = newUsername;
+    }
+    
+    /**
+     * 
+     * @return A boolean if the user is administrator or not
+     */
+    public static Boolean isAdmin(){
+        return admin;
+    }
+    
+    /**
+     * 
+     * @param newAdmin Set a user as administrator or not.
+     */
+    public static void setAdmin(Boolean newAdmin){
+        admin = newAdmin;
     }
     
 }

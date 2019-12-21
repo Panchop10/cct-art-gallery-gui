@@ -21,26 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.cct.artgallery;
-
-import com.cct.artgallery.auth.AuthController;
+package com.cct.artgallery.utils;
 
 /**
  *
  * @author Francisco Olivares
+ * Enum class to handle API end points. 
  */
-public class Main {
-    
-    public Main() {
-        new AuthController();
+public enum API 
+{
+    LOGIN("login/"),
+    REGISTER("users/signup/");
+ 
+    private final String envEndPoint;
+    private final String HOST = "http://localhost:8000/";
+ 
+    API(String envEndPoint) {
+        this.envEndPoint = envEndPoint;
     }
-    
     
     /**
-     * @param args the command line arguments
+     * 
+     * @return Endpoint of the API. 
      */
-    public static void main(String[] args) {
-        new Main();
+    public String getUrl() {
+        return HOST + envEndPoint;
     }
-    
 }

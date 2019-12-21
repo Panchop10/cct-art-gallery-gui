@@ -21,40 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.cct.artgallery.utils;
+package com.cct.artgallery.admin;
 
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.awt.Color;
+import java.awt.Dimension;
+import javax.swing.JPanel;
 
 /**
  *
  * @author Francisco Olivares
- * Utility class to export fonts
  */
-public class CustomFonts {
+public class ArtPiecePanel extends JPanel {
     
-    /**
-     * 
-     * @return Font Roboto from Google
-     */
-    public Font getRoboto(){
-        
-        Font font;
-        
-        try {            
-            font = Font.createFont(
-                    Font.TRUETYPE_FONT,
-                    getClass().getClassLoader().getResourceAsStream("fonts/Roboto-Regular.ttf")
-            );
-        } catch (FontFormatException | IOException ex) {
-            Logger.getLogger(CustomFonts.class.getName()).log(Level.SEVERE, null, ex);
-            font = new Font("Serif", Font.PLAIN, 12);
-        }
-        
-        return font;
+    @SuppressWarnings("OverridableMethodCallInConstructor")
+    public ArtPiecePanel(AdminController controller){
+        this.setPreferredSize(new Dimension(800, 660));
+        this.setMaximumSize(new Dimension(800, 660));
+        this.setBackground(Color.WHITE);
     }
     
 }

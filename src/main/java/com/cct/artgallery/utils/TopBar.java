@@ -24,7 +24,9 @@
 package com.cct.artgallery.utils;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -36,6 +38,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.UIManager;
 
 /**
  *
@@ -51,6 +55,7 @@ public class TopBar extends JPanel {
      */
     private static Point compCoords;
     private final JPanel topPanel;
+    private JProgressBar topProgressBar;
     
     /**
      * 
@@ -111,6 +116,22 @@ public class TopBar extends JPanel {
                 window.setLocation(currCoords.x - compCoords.x, currCoords.y - compCoords.y);
             }
         });
+        
+        
+        //Panel and ProgressBar
+        JPanel progressPanel = new JPanel((LayoutManager) new FlowLayout(FlowLayout.LEFT));
+        progressPanel.setBackground(Color.BLACK);
+        
+        
+        topProgressBar = new JProgressBar();
+        topProgressBar.setIndeterminate(true);
+        topProgressBar.setVisible(false);
+        topProgressBar.setPreferredSize(new Dimension(80, 10));
+        topProgressBar.setMaximumSize(new Dimension(80, 10));
+        progressPanel.add(topProgressBar);
+        
+        
+        topPanel.add(progressPanel);        
         topPanel.add(minimize);
         topPanel.add(exit);
     }
@@ -123,4 +144,14 @@ public class TopBar extends JPanel {
     public JPanel getTopBar(){
         return topPanel;
     }
+    
+    /**
+     * 
+     * @param status Set visible the progress bar on the top bar.
+     */
+    public void setLoading(Boolean status){
+        this.topProgressBar.setVisible(status);
+    }
 }
+
+

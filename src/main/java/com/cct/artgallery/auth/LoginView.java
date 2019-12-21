@@ -23,7 +23,7 @@
  */
 package com.cct.artgallery.auth;
 
-import com.cct.artgallery.utils.CustomFonts;
+import com.cct.artgallery.utils.CustomFont;
 import com.cct.artgallery.utils.TopBar;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -60,6 +60,8 @@ public class LoginView{
     private JTextField loginPassword;
     private AuthController controllerListener;
     private JLabel errorLabel;
+    private JLabel sucessLabel;
+    public TopBar topBar;
     
     public LoginView(AuthController controller) {
         this.controllerListener = controller;
@@ -69,7 +71,7 @@ public class LoginView{
             window = new JFrame("CCT Art Gallery");
             
             //Set up top bar with custom buttons
-            TopBar topBar = new TopBar(window);
+            topBar = new TopBar(window);
             JPanel topPanel = topBar.getTopBar();
             
             //JFrame properties
@@ -96,7 +98,7 @@ public class LoginView{
             loginPanel.setLayout(new BoxLayout(loginPanel, BoxLayout.Y_AXIS));
             
             //Call Roboto Font
-            CustomFonts customFont = new CustomFonts();
+            CustomFont customFont = new CustomFont();
             Font roboto = customFont.getRoboto();
             
             
@@ -112,7 +114,7 @@ public class LoginView{
             loginTitle.setPreferredSize(new Dimension(220, 40));
             loginTitle.setMaximumSize(new Dimension(220, 40));
             loginPanel.add(loginTitle);
-            loginPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            loginPanel.add(Box.createRigidArea(new Dimension(0, 5)));
             
             //Create Error JLabel
             errorLabel = new JLabel("", JLabel.CENTER);
@@ -122,10 +124,20 @@ public class LoginView{
             errorLabel.setPreferredSize(new Dimension(200, 20));
             errorLabel.setMaximumSize(new Dimension(200, 20));
             loginPanel.add(errorLabel);
-            loginPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+            
+            //Create Sucess JLabel
+            sucessLabel = new JLabel("", JLabel.CENTER);
+            sucessLabel.setForeground(new Color(0, 100, 0));
+            sucessLabel.setFont(roboto.deriveFont(Font.PLAIN, 10f));
+            sucessLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            sucessLabel.setPreferredSize(new Dimension(200, 20));
+            sucessLabel.setMaximumSize(new Dimension(200, 20));
+            loginPanel.add(sucessLabel);
+            loginPanel.add(Box.createRigidArea(new Dimension(0, 10)));
             
             //Create and add email JTextField            
             loginEmail = new JTextField(" Email");
+            loginEmail.setFont(roboto.deriveFont(Font.PLAIN, 12f));
             loginEmail.setForeground(Color.GRAY);
             loginEmail.addFocusListener(new FocusListener() {
                 @Override
@@ -151,6 +163,7 @@ public class LoginView{
             
             //Create and add password JTextField            
             loginPassword = new JTextField(" Password");
+            loginPassword.setFont(roboto.deriveFont(Font.PLAIN, 12f));
             loginPassword.setForeground(Color.GRAY);
             loginPassword.addFocusListener(new FocusListener() {
                 @Override
@@ -237,11 +250,28 @@ public class LoginView{
         new Thread(() -> {
             errorLabel.setText(message);
             try {
-                Thread.sleep(3000);
+                Thread.sleep(4000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(LoginView.class.getName()).log(Level.SEVERE, null, ex);
             }
             errorLabel.setText("");
+        }).start();
+    }
+    
+        /**
+     * 
+     * @param message Receive an String and shows during 3 seconds a JLabel 
+     * with the message as an error.
+     */
+    public void showSucess(String message){
+        new Thread(() -> {
+            sucessLabel.setText(message);
+            try {
+                Thread.sleep(4000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(LoginView.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            sucessLabel.setText("");
         }).start();
     }
     

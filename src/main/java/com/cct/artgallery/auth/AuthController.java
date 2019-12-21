@@ -23,11 +23,12 @@
  */
 package com.cct.artgallery.auth;
 
+import com.cct.artgallery.admin.AdminController;
+import com.cct.artgallery.utils.UserDetail;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import org.json.JSONObject;
 
 /**
  *
@@ -35,10 +36,11 @@ import java.util.Map;
  */
 public class AuthController implements ActionListener{
     
-    private LoginView loginView;
+    private final LoginView loginView;
     private RegisterView registerView;
     
     public AuthController(){
+        //Open login view
         loginView = new LoginView(this);
     }
 
@@ -50,6 +52,9 @@ public class AuthController implements ActionListener{
                 break;
             case "loginRegister":
                 openRegister();
+                break;
+            case "registerSubmit":
+                register();
                 break;
             case "registerToLogin":
                 registerToLogin();
@@ -69,6 +74,10 @@ public class AuthController implements ActionListener{
         loginView.show();
     }
     
+    /**
+     * Handles login logic, request data from view and pass to model
+     * then checks the answer and send user to the next view.
+     */
     private void login(){
         Map<String, String> data = loginView.getData();
         String userEmail = data.get("email");
@@ -78,19 +87,94 @@ public class AuthController implements ActionListener{
             loginView.showError("Email or password incorrect.");
         }
         else{
+            LoginModel loginModel = new LoginModel();
+            loginView.topBar.setLoading(true);
             
+            new Thread(() -> {
+                int status = loginModel.login(data);
+                
+                //Store user details if status code 
+                //is correct and send to new page
+                switch (status) {
+                    case 200:
+                        JSONObject response = loginModel.getResponse();
+                        UserDetail.setToken(response.getString("access"));
+                        UserDetail.setUsername(response.getString("username"));
+                        UserDetail.setAdmin(response.getBoolean("admin"));
+                        
+                        if(UserDetail.isAdmin()){
+                            loginView.hide();
+                            new AdminController(this);
+                        }
+                        break;
+                    case 401:
+                        loginView.showError("Email or password incorrect.");
+                        break;
+                    default:
+                        String message = "Error " + status + ": Please try again later.";
+                        loginView.showError(message);
+                        break;
+                }
+                
+                loginView.topBar.setLoading(false);
+            }).start();
+        }
+    }
+    
+    /**
+     * Handles register logic, request data from register view and send to
+     * register model to register user in database.
+     */
+    private void register(){
+        Map<String, String> data = registerView.getData();
+        String username = data.get("username");
+        String userEmail = data.get("email");
+        String userPassword = data.get("password");
+        String userPasswordConf = data.get("password_confirmation");
+        
+        //Clean first and last name values by removing placeholder.
+        if(data.get("first_name").equals(" First Name")){
+            data.replace("first_name", "");
+        }
+        if(data.get("last_name").equals(" Last Name")){
+            data.replace("last_name", "");
         }
         
-//        for (Map.Entry<String, String> entry : data.entrySet()) {
-//            //String key = entry.getKey();
-//            //HashMap value = entry.getValue();
-//            System.out.println(entry.getValue());
-//            // do what you have to do here
-//            // In your case, another loop.
-//            if(entry.getValue().equals(" Email") || entry.getValue().equals(" Password")){
-//                loginView.showError("Email or password incorrect.");
-//            }            
-//        }
+        //Check if all data is present.
+        if(username.equals(" Username")){
+            registerView.showError("Username can not be empty.");
+        }
+        else if(userEmail.equals(" Email")){
+            registerView.showError("Email can not be empty.");
+        }
+        else if(userPassword.equals(" Password")){
+            registerView.showError("Password can not be empty.");
+        }
+        else if(!userPassword.equals(userPasswordConf)){
+            registerView.showError("Password does not match.");
+        }
+        else{
+            RegisterModel registerModel = new RegisterModel();
+            registerView.topBar.setLoading(true);
+            
+            new Thread(() -> {
+                int status = registerModel.register(data);
+                
+                switch (status) {
+                    case 201:
+                        registerToLogin();
+                        loginView.showSucess("Successful registration, please login.");
+                        break;
+                    default:
+                        String message = "Error " + status + ": Please try again later.";
+                        loginView.showError(message);
+                        break;
+                }
+                
+                registerView.topBar.setLoading(false);
+            }).start();
+        
+        }
     }
     
 }

@@ -23,7 +23,7 @@
  */
 package com.cct.artgallery.auth;
 
-import com.cct.artgallery.utils.CustomFonts;
+import com.cct.artgallery.utils.CustomFont;
 import com.cct.artgallery.utils.TopBar;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -34,6 +34,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Box;
@@ -61,6 +63,8 @@ public class RegisterView{
     private JTextField registerPassword;
     private JTextField registerConfirmPassword;
     private AuthController controllerListener;
+    private JLabel errorLabel;
+    public TopBar topBar;
     
     public RegisterView(AuthController controller) {
         this.controllerListener = controller;
@@ -70,7 +74,7 @@ public class RegisterView{
             window = new JFrame("CCT Art Gallery");
             
             //Set up top bar with custom buttons
-            TopBar topBar = new TopBar(window);
+            topBar = new TopBar(window);
             JPanel topPanel = topBar.getTopBar();
             
             //JFrame properties
@@ -97,7 +101,7 @@ public class RegisterView{
             registerPanel.setLayout(new BoxLayout(registerPanel, BoxLayout.Y_AXIS));
             
             //Call Roboto Font
-            CustomFonts customFont = new CustomFonts();
+            CustomFont customFont = new CustomFont();
             Font roboto = customFont.getRoboto();
             
             
@@ -113,10 +117,21 @@ public class RegisterView{
             registerTitle.setPreferredSize(new Dimension(220, 40));
             registerTitle.setMaximumSize(new Dimension(220, 40));
             registerPanel.add(registerTitle);
-            registerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+            registerPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+            
+            //Create Error JLabel
+            errorLabel = new JLabel("", JLabel.CENTER);
+            errorLabel.setForeground(Color.RED);
+            errorLabel.setFont(roboto.deriveFont(Font.PLAIN, 10f));
+            errorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            errorLabel.setPreferredSize(new Dimension(200, 20));
+            errorLabel.setMaximumSize(new Dimension(200, 20));
+            registerPanel.add(errorLabel);
+            registerPanel.add(Box.createRigidArea(new Dimension(0, 15)));
             
             //Create and add username JTextField            
             registerUsername = new JTextField(" Username");
+            registerUsername.setFont(roboto.deriveFont(Font.PLAIN, 12f));
             registerUsername.setForeground(Color.GRAY);
             registerUsername.addFocusListener(new FocusListener() {
                 @Override
@@ -142,6 +157,7 @@ public class RegisterView{
             
             //Create and add first name JTextField            
             firstName = new JTextField(" First Name");
+            firstName.setFont(roboto.deriveFont(Font.PLAIN, 12f));
             firstName.setForeground(Color.GRAY);
             firstName.addFocusListener(new FocusListener() {
                 @Override
@@ -167,6 +183,7 @@ public class RegisterView{
             
             //Create and add last name JTextField            
             lastName = new JTextField(" Last Name");
+            lastName.setFont(roboto.deriveFont(Font.PLAIN, 12f));
             lastName.setForeground(Color.GRAY);
             lastName.addFocusListener(new FocusListener() {
                 @Override
@@ -192,6 +209,7 @@ public class RegisterView{
             
             //Create and add email JTextField            
             registerEmail = new JTextField(" Email");
+            registerEmail.setFont(roboto.deriveFont(Font.PLAIN, 12f));
             registerEmail.setForeground(Color.GRAY);
             registerEmail.addFocusListener(new FocusListener() {
                 @Override
@@ -217,6 +235,7 @@ public class RegisterView{
             
             //Create and add password JTextField            
             registerPassword = new JTextField(" Password");
+            registerPassword.setFont(roboto.deriveFont(Font.PLAIN, 12f));
             registerPassword.setForeground(Color.GRAY);
             registerPassword.addFocusListener(new FocusListener() {
                 @Override
@@ -242,6 +261,7 @@ public class RegisterView{
             
             //Create and add confirm password JTextField            
             registerConfirmPassword = new JTextField(" Confirm Password");
+            registerConfirmPassword.setFont(roboto.deriveFont(Font.PLAIN, 12f));
             registerConfirmPassword.setForeground(Color.GRAY);
             registerConfirmPassword.addFocusListener(new FocusListener() {
                 @Override
@@ -267,16 +287,16 @@ public class RegisterView{
             
             //Create and add Login button
             URL sumitButton = getClass().getClassLoader().getResource("images/register_submit.png");
-            final JButton loginSubmit = new JButton(new ImageIcon(sumitButton));
-            loginSubmit.setBorderPainted(false);            
-            loginSubmit.setPreferredSize(new Dimension(90, 40));
-            loginSubmit.setMaximumSize(new Dimension(90, 40)); 
-            loginSubmit.setAlignmentX(Component.CENTER_ALIGNMENT);
-            registerPanel.add(loginSubmit);
+            final JButton registerSubmit = new JButton(new ImageIcon(sumitButton));
+            registerSubmit.setBorderPainted(false);            
+            registerSubmit.setPreferredSize(new Dimension(90, 40));
+            registerSubmit.setMaximumSize(new Dimension(90, 40)); 
+            registerSubmit.setAlignmentX(Component.CENTER_ALIGNMENT);
+            registerPanel.add(registerSubmit);
             
             //Add listener to login submit button
-            loginSubmit.addActionListener((ActionListener) controllerListener);
-            loginSubmit.setActionCommand("loginSubmit");
+            registerSubmit.addActionListener((ActionListener) controllerListener);
+            registerSubmit.setActionCommand("registerSubmit");
             
             //Create and add register button
             JButton loginRegister = new JButton("Back to login");
@@ -311,5 +331,38 @@ public class RegisterView{
      */
     public void dispose(){
         window.dispose();
+    }
+    
+    /**
+     * 
+     * @param message Receive an String and shows during 3 seconds a JLabel 
+     * with the message as an error.
+     */
+    public void showError(String message){
+        new Thread(() -> {
+            errorLabel.setText(message);
+            try {
+                Thread.sleep(4000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(LoginView.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            errorLabel.setText("");
+        }).start();
+    }
+    
+     /**
+     * 
+     * @return HashMap with the data entered in the JTextField of the view.
+     */
+    public Map<String, String> getData(){
+        Map<String, String> data = new HashMap<>();
+        data.put("username", registerUsername.getText());
+        data.put("first_name", firstName.getText());
+        data.put("last_name", lastName.getText());
+        data.put("email", registerEmail.getText());
+        data.put("password", registerPassword.getText());
+        data.put("password_confirmation", registerConfirmPassword.getText());
+        
+        return data;
     }
 }

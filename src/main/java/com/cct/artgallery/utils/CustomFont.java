@@ -21,26 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.cct.artgallery;
+package com.cct.artgallery.utils;
 
-import com.cct.artgallery.auth.AuthController;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Francisco Olivares
+ * Utility class to export fonts
  */
-public class Main {
-    
-    public Main() {
-        new AuthController();
-    }
-    
+public class CustomFont {
     
     /**
-     * @param args the command line arguments
+     * 
+     * @return Font Roboto from Google
      */
-    public static void main(String[] args) {
-        new Main();
+    public Font getRoboto(){
+        
+        Font font;
+        
+        try {            
+            font = Font.createFont(
+                    Font.TRUETYPE_FONT,
+                    getClass().getClassLoader().getResourceAsStream("fonts/Roboto-Regular.ttf")
+            );
+        } catch (FontFormatException | IOException ex) {
+            Logger.getLogger(CustomFont.class.getName()).log(Level.SEVERE, null, ex);
+            font = new Font("Serif", Font.PLAIN, 12);
+        }
+        
+        return font;
     }
     
 }
