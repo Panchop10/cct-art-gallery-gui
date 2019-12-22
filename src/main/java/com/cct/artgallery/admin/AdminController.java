@@ -23,9 +23,13 @@
  */
 package com.cct.artgallery.admin;
 
+import com.cct.artgallery.admin.CustomTable.ElementList;
 import com.cct.artgallery.auth.AuthController;
+import com.cct.artgallery.utils.UserDetail;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  *
@@ -38,10 +42,12 @@ public class AdminController implements ActionListener{
     private final MenuAdmin menu;
     
     public AdminController(AuthController parentController){
-        //Open admin view
+        authController = parentController;
+        
+        //Open admin view and get art pieces from the model.
         menu = new MenuAdmin(this);
         adminView = new AdminView(this, menu);
-        authController = parentController;
+        getArtPieces();
     }
 
     @Override
@@ -50,6 +56,7 @@ public class AdminController implements ActionListener{
             case "artPiecesMenu":
                 menu.setActive(e.getActionCommand());
                 adminView.updateContent(e.getActionCommand());
+                getArtPieces();
                 break;
             case "artistsMenu":
                 menu.setActive(e.getActionCommand());
@@ -59,8 +66,69 @@ public class AdminController implements ActionListener{
                 menu.setActive(e.getActionCommand());
                 adminView.updateContent(e.getActionCommand());
                 break;
+            case "logout":
+                adminView.dispose();
+                UserDetail.logout();
+                authController.openLogin();
+                break;
             default:
                 throw new UnsupportedOperationException("Not supported yet.");
         }
+    }
+    
+    /**
+     * Request ArtPieces to the model and populates the ArtPieceList in the View.
+     */
+    private void getArtPieces(){
+        AdminModel adminModel = new AdminModel();
+        adminView.topBar.setLoading(true);
+
+        new Thread(() -> {
+            int status = adminModel.getArtPieces();
+
+            switch (status) {
+                case 200:
+                    //Populate the ArtPieceList with the data from the model.
+                    JSONArray response = adminModel.getResponseArray();
+                    
+                    ArtPiecePanel artPiecePanel = adminView.getArtPiecesPanel();
+                    ElementList artPiecesList = artPiecePanel.getArtPiecesList();
+                    artPiecesList.getListModel().clear();
+                    
+                    for (int i = 0; i < response.length(); i++){
+                        JSONObject artPiece = response.getJSONObject(i);
+                        artPiecesList.addElement(artPiece);
+                    }
+                    
+                    //artPiecesList.addElement(new JSONObject());
+                    
+                    //System.out.println(artPiecesList.getListModel().get(0).getValue());
+                    
+                    
+                    
+                    //System.out.println("asd");
+                    System.out.println(response);
+                    break;
+                default:
+                    String message = "Error " + status + ": Please try again later.";
+                    System.out.println(message);
+                    //adminView.showError(message);
+                    break;
+            }
+
+            adminView.topBar.setLoading(false);
+        }).start();
+        
+    }
+    
+    public void selectArtPiece(int index){
+        ArtPiecePanel artPiecePanel = adminView.getArtPiecesPanel();
+        ElementList artPiecesList = artPiecePanel.getArtPiecesList();
+        JSONObject artPiece = artPiecesList.getListModel().get(index).getElement();
+        
+        adminView.artPiecePanel.setUpdateElement(artPiece);
+        
+        //adminView.artPiecePanel.elementName.setText(artPiece.getString("slug_name"));
+        //System.out.println(index);
     }
 }

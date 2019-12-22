@@ -23,6 +23,7 @@
  */
 package com.cct.artgallery.admin;
 
+import com.cct.artgallery.admin.CustomTable.ElementList;
 import com.cct.artgallery.auth.LoginView;
 import com.cct.artgallery.utils.TopBar;
 import java.awt.BorderLayout;
@@ -40,10 +41,11 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class AdminView {
     
-    private JFrame window;
-    public TopBar topBar;
-    private AdminController controllerListener;
-    private MenuAdmin menu;
+    private     JFrame          window;
+    public      TopBar          topBar;
+    private     AdminController controllerListener;
+    private     MenuAdmin       menu;
+    public      ArtPiecePanel   artPiecePanel;
     
     public AdminView(AdminController controller, MenuAdmin menu){
         this.controllerListener = controller;
@@ -74,8 +76,8 @@ public class AdminView {
             content.add(menu);
             
             //Add ArtPiecePanel as default content to the right panel.
-            JPanel mainContent = new ArtPiecePanel(controllerListener);       
-            content.add(mainContent);
+            artPiecePanel = new ArtPiecePanel(controllerListener);       
+            content.add(artPiecePanel);
             
 
             window.validate();
@@ -89,7 +91,7 @@ public class AdminView {
     public void updateContent(String menu){
         switch(menu) {
             case "artPiecesMenu":
-                updateMainPanel(new ArtPiecePanel(controllerListener));
+                updateArtPiecePanel();
                 break;
             case "artistsMenu":
                 updateMainPanel(new ArtistPanel(controllerListener));
@@ -105,6 +107,21 @@ public class AdminView {
         window.repaint();
     }
     
+    private void updateArtPiecePanel(){
+        window.getContentPane().remove(1);
+        //Content Panel which contains menu and content.
+        JPanel content = new JPanel();
+        content.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        window.add(content);
+
+        //Add menu left to the left content panel.
+        content.add(this.menu);
+
+        //Add ArtPiecePanel as default content to the right panel. 
+        this.artPiecePanel = new ArtPiecePanel(controllerListener);
+        content.add(artPiecePanel);
+    }
+    
     private void updateMainPanel(JPanel mainContent){
         window.getContentPane().remove(1);
         //Content Panel which contains menu and content.
@@ -118,5 +135,20 @@ public class AdminView {
         //Add ArtPiecePanel as default content to the right panel.  
         content.add(mainContent);
     } 
+    
+    /**
+     * Dispose Administrator JFrame
+     */
+    public void dispose(){
+        window.dispose();
+    }
+    
+    /**
+     * 
+     * @return ElementList with all the active elements in the Panel Art Pieces. 
+     */
+    public ArtPiecePanel getArtPiecesPanel(){
+        return artPiecePanel;
+    }
     
 }

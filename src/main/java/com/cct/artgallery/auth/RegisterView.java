@@ -55,16 +55,16 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class RegisterView{
     
-    private JFrame window;
-    private JTextField registerUsername;
-    private JTextField firstName;
-    private JTextField lastName;
-    private JTextField registerEmail;
-    private JTextField registerPassword;
-    private JTextField registerConfirmPassword;
-    private AuthController controllerListener;
-    private JLabel errorLabel;
-    public TopBar topBar;
+    private JFrame          window;
+    private JTextField      registerUsername;
+    private JTextField      firstName;
+    private JTextField      lastName;
+    private JTextField      registerEmail;
+    private JTextField      registerPassword;
+    private JTextField      registerConfirmPassword;
+    private AuthController  controllerListener;
+    private JLabel          errorLabel;
+    public  TopBar          topBar;
     
     public RegisterView(AuthController controller) {
         this.controllerListener = controller;

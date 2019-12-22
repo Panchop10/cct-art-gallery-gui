@@ -29,9 +29,9 @@ package com.cct.artgallery.utils;
  */
 public class UserDetail {
     
-    private static String token;
-    private static String username;
-    private static Boolean admin;
+    private static String   token;
+    private static String   username;
+    private static Boolean  admin;
     
     /**
      * 
@@ -79,6 +79,16 @@ public class UserDetail {
      */
     public static void setAdmin(Boolean newAdmin){
         admin = newAdmin;
+    }
+    
+    /**
+     * Remove values stored related to the user logged.
+     * (token, username and admin)
+     */
+    public static void logout(){
+        token = "";
+        username = "";
+        admin = false;
     }
     
 }

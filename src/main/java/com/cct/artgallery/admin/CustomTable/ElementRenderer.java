@@ -21,31 +21,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.cct.artgallery.utils;
+package com.cct.artgallery.admin.CustomTable;
+
+import com.cct.artgallery.admin.AdminController;
+import com.cct.artgallery.admin.ArtPiecePanel;
+import java.awt.Color;
+import java.awt.Component;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
 
 /**
  *
  * @author Francisco Olivares
- * Enum class to handle API end points. 
  */
-public enum API 
-{
-    LOGIN("login/"),
-    REGISTER("users/signup/"),
-    ARTPIECES("art-pieces/");
- 
-    private final String envEndPoint;
-    private final String HOST = "http://localhost:8000/";
- 
-    API(String envEndPoint) {
-        this.envEndPoint = envEndPoint;
+    public class ElementRenderer implements ListCellRenderer<Object>{
+        
+        private final AdminController parentController;
+        
+        public ElementRenderer(AdminController parentController){
+            this.parentController = parentController;
+        }
+        
+        @Override
+        public Component getListCellRendererComponent(
+            JList<?> list,                    
+            Object value,
+            int index, 
+            boolean isSelected, 
+            boolean cellHasFocus) {
+
+            Component component = (Component) value;
+               if (isSelected){
+                   component.setBackground(new Color(241, 164, 66));
+                   parentController.selectArtPiece(index);
+               } else {
+                   component.setBackground(Color.WHITE);
+               }
+               return component;
+        }
     }
-    
-    /**
-     * 
-     * @return Endpoint of the API. 
-     */
-    public String getUrl() {
-        return HOST + envEndPoint;
-    }
-}

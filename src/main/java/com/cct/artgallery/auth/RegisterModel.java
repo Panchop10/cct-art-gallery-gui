@@ -43,8 +43,8 @@ import org.json.JSONObject;
  */
 public class RegisterModel {
     
-    private static HttpURLConnection connection;
-    private JSONObject response = new JSONObject();
+    private static  HttpURLConnection   connection;
+    private         JSONObject          response    = new JSONObject();
     
     /**
      * 

@@ -36,8 +36,8 @@ import org.json.JSONObject;
  */
 public class AuthController implements ActionListener{
     
-    private final LoginView loginView;
-    private RegisterView registerView;
+    private final   LoginView       loginView;
+    private         RegisterView    registerView;
     
     public AuthController(){
         //Open login view
@@ -62,6 +62,13 @@ public class AuthController implements ActionListener{
             default:
                 throw new UnsupportedOperationException("Not supported yet.");
         }
+    }
+    
+    /**
+     * Open login view.
+     */
+    public void openLogin(){
+        loginView.show();
     }
     
     private void openRegister(){

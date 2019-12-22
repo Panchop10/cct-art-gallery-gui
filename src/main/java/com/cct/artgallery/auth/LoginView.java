@@ -55,13 +55,13 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class LoginView{
     
-    private JFrame window;
-    private JTextField loginEmail;
-    private JTextField loginPassword;
-    private AuthController controllerListener;
-    private JLabel errorLabel;
-    private JLabel sucessLabel;
-    public TopBar topBar;
+    private JFrame          window;
+    private JTextField      loginEmail;
+    private JTextField      loginPassword;
+    private AuthController  controllerListener;
+    private JLabel          errorLabel;
+    private JLabel          sucessLabel;
+    public  TopBar          topBar;
     
     public LoginView(AuthController controller) {
         this.controllerListener = controller;

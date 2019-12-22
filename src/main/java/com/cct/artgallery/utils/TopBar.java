@@ -26,7 +26,6 @@ package com.cct.artgallery.utils;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -39,7 +38,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.UIManager;
 
 /**
  *
@@ -53,9 +51,9 @@ public class TopBar extends JPanel {
      * 
      * topPanel stores the elements close and minimize 
      */
-    private static Point compCoords;
-    private final JPanel topPanel;
-    private JProgressBar topProgressBar;
+    private static  Point           compCoords;
+    private final   JPanel          topPanel;
+    private final   JProgressBar    topProgressBar;
     
     /**
      * 

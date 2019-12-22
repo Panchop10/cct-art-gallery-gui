@@ -21,8 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.cct.artgallery.auth;
+package com.cct.artgallery.admin;
 
+import com.cct.artgallery.auth.LoginModel;
 import com.cct.artgallery.utils.API;
 import com.cct.artgallery.utils.Constant;
 import java.io.BufferedReader;
@@ -35,27 +36,27 @@ import java.net.URL;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
  *
  * @author Francisco Olivares
  */
-public class LoginModel {
+public class AdminModel {
     
-    private static  HttpURLConnection   connection;
-    private         JSONObject          response    = new JSONObject();
+        
+    private static  HttpURLConnection connection;
+    private         JSONObject        response      = new JSONObject();
+    private         JSONArray         responseArray = new JSONArray();
     
     /**
      * 
-     * Consume the service login in the API.
-     * @param  data HashMap with email and password as String.
-     * @return status code of the service login. 
+     * Consume the service get art pieces in the API.
+     * @return status code of the service art pieces. 
      */
     @SuppressWarnings("NestedAssignment")
-    public int login(Map<String, String> data){
-        String userEmail = data.get("email");
-        String userPassword = data.get("password");
+    public int getArtPieces(){
         
         BufferedReader reader;
         String line;
@@ -63,29 +64,15 @@ public class LoginModel {
         
         try {            
             //Create connection and set headers.
-            URL url = new URL(API.LOGIN.getUrl());
+            URL url = new URL(API.ARTPIECES.getUrl());
             connection = (HttpURLConnection) url.openConnection();
-            connection.setDoOutput(true);
             connection.setDoInput(true);
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Accept", "application/json");
-            connection.setRequestMethod("POST");
+            connection.setRequestMethod("GET");
             connection.setConnectTimeout(Constant.CONNTIMEOUT.getInt());
             connection.setReadTimeout(Constant.READTIMEOUT.getInt());
-            
-            //Create body as JSONObject
-            JSONObject jsonData = new JSONObject();
-            jsonData.put("email", "pancho1990@live.cl");
-            jsonData.put("password", "v2oke83j");
-            //jsonData.put("email", userEmail);
-            //jsonData.put("password", userPassword);
-            
-            
-            //Send body as JSONObject
-            OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
-            wr.write(jsonData.toString());
-            wr.flush();
-            
+
             int status = connection.getResponseCode();
             
             if (status > 299){
@@ -104,7 +91,7 @@ public class LoginModel {
                 }
                 reader.close();                
                 //Parse and store response in response object
-                parse(responseContent.toString());
+                parseArray(responseContent.toString());
             }
             return(status);
             
@@ -132,10 +119,29 @@ public class LoginModel {
     
     /**
      * 
+     * @param responseBody Receive the response as a String
+     * and store the response parsed as a JSONArray in the attribute response.
+     * 
+     */
+    private void parseArray(String responseBody){
+        JSONArray data = new JSONArray(responseBody);
+        this.responseArray = data;
+    }
+    
+    /**
+     * 
      * @return Response of the end point parsed as a JSONObject.
      */
     public JSONObject getResponse(){
         return response;
+    }
+    
+    /**
+     * 
+     * @return Response of the end point parsed as a JSONArray.
+     */
+    public JSONArray getResponseArray(){
+        return responseArray;
     }
     
 }
