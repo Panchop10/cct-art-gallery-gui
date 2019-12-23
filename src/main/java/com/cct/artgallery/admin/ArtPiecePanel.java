@@ -615,6 +615,7 @@ public class ArtPiecePanel extends JPanel {
                 Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
             }
             this.message.setText("");
+            this.message.setForeground(new Color(0, 100, 0));
         }).start();
     }
 

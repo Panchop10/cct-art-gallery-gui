@@ -24,7 +24,6 @@
 package com.cct.artgallery.admin.CustomTable;
 
 import com.cct.artgallery.utils.CustomFont;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -39,7 +38,7 @@ import org.json.JSONObject;
  * @author Francisco Olivares
  */
    public class Element extends JPanel{
-        private JSONObject element;
+        private final JSONObject element;
         
         @SuppressWarnings("OverridableMethodCallInConstructor")
         public Element(JSONObject element, String type){
@@ -83,6 +82,30 @@ import org.json.JSONObject;
                 price.setMaximumSize(new Dimension(100, 20));
                 this.add(price);
                 
+            }
+            
+            if(type.equals("artist")){
+                String artistFirstName = element.getString("first_name");
+                String artistLastName = element.getString("last_name");
+                JLabel name = new JLabel(artistFirstName + " " + artistLastName);
+                name.setFont(roboto.deriveFont(Font.PLAIN, 10f));
+                name.setPreferredSize(new Dimension(250, 20));
+                name.setMaximumSize(new Dimension(250, 20));
+                this.add(name);
+                
+                String websiteName = element.getString("website");
+                JLabel website = new JLabel(websiteName);
+                website.setFont(roboto.deriveFont(Font.PLAIN, 10f));
+                website.setPreferredSize(new Dimension(200, 20));
+                website.setMaximumSize(new Dimension(200, 20));
+                this.add(website);
+                
+                String emailName = element.getString("email");
+                JLabel email = new JLabel(emailName);
+                email.setFont(roboto.deriveFont(Font.PLAIN, 10f));
+                email.setPreferredSize(new Dimension(250, 20));
+                email.setMaximumSize(new Dimension(250, 20));
+                this.add(email);
             }
         }
         

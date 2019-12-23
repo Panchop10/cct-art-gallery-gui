@@ -24,7 +24,6 @@
 package com.cct.artgallery.admin.CustomTable;
 
 import com.cct.artgallery.admin.AdminController;
-import com.cct.artgallery.admin.ArtPiecePanel;
 import java.awt.BorderLayout;
 import static javax.swing.BorderFactory.createEmptyBorder;
 import javax.swing.DefaultListModel;
@@ -46,7 +45,7 @@ public class ElementList extends JPanel{
 
     @SuppressWarnings("OverridableMethodCallInConstructor")
      public ElementList(AdminController parentController, String type){
-        this.render = new ElementRenderer(parentController);
+        this.render = new ElementRenderer(parentController, type);
         this.type = type;
         
         //JList properties

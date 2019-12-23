@@ -40,11 +40,12 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class AdminView {
     
-    public     JFrame          window;
+    private     JFrame          window;
     public      TopBar          topBar;
     private     AdminController controllerListener;
     private     MenuAdmin       menu;
     public      ArtPiecePanel   artPiecePanel;
+    public      ArtistPanel     artistPanel;
     
     public AdminView(AdminController controller, MenuAdmin menu){
         this.controllerListener = controller;
@@ -75,8 +76,12 @@ public class AdminView {
             content.add(menu);
             
             //Add ArtPiecePanel as default content to the right panel.
-            artPiecePanel = new ArtPiecePanel(controllerListener);       
+            artPiecePanel = new ArtPiecePanel(controllerListener);     
             content.add(artPiecePanel);
+            
+            //Create the others panels to load faster when the user open them.
+            artistPanel = new ArtistPanel(controllerListener);  
+            //artPiecePanel = new ArtPiecePanel(controllerListener);  
             
 
             window.validate();
@@ -93,7 +98,7 @@ public class AdminView {
                 updateArtPiecePanel();
                 break;
             case "artistsMenu":
-                updateMainPanel(new ArtistPanel(controllerListener));
+                updateArtistPanel();
                 break;
             case "usersMenu":
                 updateMainPanel(new UserPanel(controllerListener));
@@ -106,6 +111,9 @@ public class AdminView {
         window.repaint();
     }
     
+    /**
+     * Create new art piece panel and store it in the attribute.
+     */
     private void updateArtPiecePanel(){
         window.getContentPane().remove(1);
         //Content Panel which contains menu and content.
@@ -119,6 +127,24 @@ public class AdminView {
         //Add ArtPiecePanel as default content to the right panel. 
         this.artPiecePanel = new ArtPiecePanel(controllerListener);
         content.add(artPiecePanel);
+    }
+    
+        /**
+     * Create new art piece panel and store it in the attribute.
+     */
+    private void updateArtistPanel(){
+        window.getContentPane().remove(1);
+        //Content Panel which contains menu and content.
+        JPanel content = new JPanel();
+        content.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        window.add(content);
+
+        //Add menu left to the left content panel.
+        content.add(this.menu);
+
+        //Add ArtistPanel as content to the right panel. 
+        this.artistPanel = new ArtistPanel(controllerListener);
+        content.add(artistPanel);
     }
     
     private void updateMainPanel(JPanel mainContent){
@@ -148,5 +174,13 @@ public class AdminView {
      */
     public ArtPiecePanel getArtPiecesPanel(){
         return artPiecePanel;
+    }
+    
+    /**
+     * 
+     * @return ElementList with all the active elements in the Panel Art Pieces. 
+     */
+    public ArtistPanel getArtistPanel(){
+        return artistPanel;
     }
 }

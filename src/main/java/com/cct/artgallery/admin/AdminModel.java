@@ -300,9 +300,9 @@ public class AdminModel {
     
     /**
      * 
-     * Consume the service patch Art Piece in the API.
+     * Consume the service delete Art Piece in the API.
      * @param  data JSONObject with the data of the request.
-     * @return status code of the service patch art piece. 
+     * @return status code of the service delete art piece. 
      */
     @SuppressWarnings("ConvertToTryWithResources")
     public static JSONObject deleteArtPiece(JSONObject data){
@@ -311,6 +311,169 @@ public class AdminModel {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         try {
             String url = API.ARTPIECES.getUrl() + data.getString("slug_name")+"/";
+            HttpDelete httpdelete = new HttpDelete(url);
+            
+            httpdelete.addHeader(HttpHeaders.AUTHORIZATION, "Bearer "+UserDetail.getToken());
+
+            CloseableHttpResponse newResponse = httpclient.execute(httpdelete);
+            try {
+                status = newResponse.getStatusLine().getStatusCode();
+                HttpEntity resEntity = newResponse.getEntity();
+                
+                if (resEntity != null) {
+                    responseString = EntityUtils.toString(resEntity);
+                }
+                else{
+                    responseString = "{}";
+                }
+                
+            } finally {
+                newResponse.close();
+            }
+            
+        } catch (IOException ex) {
+            Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                httpclient.close();
+            } catch (IOException ex) {
+                Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+            }            
+        }
+        JSONObject responseJSON = new JSONObject();
+        responseJSON.put("status", status);
+        responseJSON.put("data", new JSONObject(responseString));
+        return responseJSON;
+    }
+    
+    /**
+     * 
+     * Consume the service add Artists in the API.
+     * @param  data JSONObject with the data of the request.
+     * @return status code of the service add artist. 
+     */
+    @SuppressWarnings("ConvertToTryWithResources")
+    public static JSONObject addArtist(JSONObject data){
+        int status = 500;
+        String responseString = "";
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            HttpPost httppost = new HttpPost(API.ARTISTS.getUrl());
+            
+            httppost.addHeader(HttpHeaders.AUTHORIZATION, "Bearer "+UserDetail.getToken());
+            
+            FileBody photo = new FileBody(new File(data.getString("photo")));
+            data.remove("photo");
+            
+            StringBody dataString = new StringBody(data.toString(), ContentType.TEXT_PLAIN);
+
+            HttpEntity reqEntity = MultipartEntityBuilder.create()
+                    .addPart("photo", photo)
+                    .addPart("data", dataString)
+                    .build();
+
+
+            httppost.setEntity(reqEntity);
+
+            CloseableHttpResponse newResponse = httpclient.execute(httppost);
+            try {
+                status = newResponse.getStatusLine().getStatusCode();
+                HttpEntity resEntity = newResponse.getEntity();
+                
+                if (resEntity != null) {
+                    responseString = EntityUtils.toString(resEntity);
+                }
+                else{
+                    responseString = "{}";
+                }
+            } finally {
+                newResponse.close();
+            }
+            
+        } catch (IOException ex) {
+            Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                httpclient.close();
+            } catch (IOException ex) {
+                Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+            }            
+        }
+        JSONObject responseJSON = new JSONObject();
+        responseJSON.put("status", status);
+        responseJSON.put("data", new JSONObject(responseString));
+        return responseJSON;
+    }
+    
+    /**
+     * 
+     * Consume the service patch Artist in the API.
+     * @param  data JSONObject with the data of the request.
+     * @return status code of the service patch artist. 
+     */
+    @SuppressWarnings("ConvertToTryWithResources")
+    public static JSONObject updateArtist(JSONObject data){
+        int status = 500;
+        String responseString = "";
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            String url = API.ARTISTS.getUrl() + data.getString("slug_name")+"/";
+            HttpPatch httppatch = new HttpPatch(url);
+            
+            httppatch.addHeader(HttpHeaders.AUTHORIZATION, "Bearer "+UserDetail.getToken());
+            
+            StringBody dataString = new StringBody(data.toString(), ContentType.TEXT_PLAIN);
+
+            HttpEntity reqEntity = MultipartEntityBuilder.create()
+                    .addPart("data", dataString)
+                    .build();
+            
+            httppatch.setEntity(reqEntity);
+
+            CloseableHttpResponse newResponse = httpclient.execute(httppatch);
+            try {
+                status = newResponse.getStatusLine().getStatusCode();
+                HttpEntity resEntity = newResponse.getEntity();
+                
+                if (resEntity != null) {
+                    responseString = EntityUtils.toString(resEntity);
+                }
+                else{
+                    responseString = "{}";
+                }
+            } finally {
+                newResponse.close();
+            }
+            
+        } catch (IOException ex) {
+            Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                httpclient.close();
+            } catch (IOException ex) {
+                Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+            }            
+        }
+        JSONObject responseJSON = new JSONObject();
+        responseJSON.put("status", status);
+        responseJSON.put("data", new JSONObject(responseString));
+        return responseJSON;
+    }
+    
+        
+    /**
+     * 
+     * Consume the service delete Artist in the API.
+     * @param  data JSONObject with the data of the request.
+     * @return status code of the service delete artist. 
+     */
+    @SuppressWarnings("ConvertToTryWithResources")
+    public static JSONObject deleteArtist(JSONObject data){
+        int status = 500;
+        String responseString = "";
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            String url = API.ARTISTS.getUrl() + data.getString("slug_name")+"/";
             HttpDelete httpdelete = new HttpDelete(url);
             
             httpdelete.addHeader(HttpHeaders.AUTHORIZATION, "Bearer "+UserDetail.getToken());

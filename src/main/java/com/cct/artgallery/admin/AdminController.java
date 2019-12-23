@@ -28,6 +28,10 @@ import com.cct.artgallery.auth.AuthController;
 import com.cct.artgallery.utils.UserDetail;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -74,6 +78,7 @@ public class AdminController implements ActionListener{
             case "artistsMenu":
                 menu.setActive(e.getActionCommand());
                 adminView.updateContent(e.getActionCommand());
+                getArtists();
                 break;
             case "usersMenu":
                 menu.setActive(e.getActionCommand());
@@ -95,6 +100,18 @@ public class AdminController implements ActionListener{
                 break;
             case "deleteArtPiece":
                 deleteArtPiece();
+                break;
+            case "addFileArtist":
+                getFileArtist();
+                break;
+            case "addArtist":
+                addArtist();
+                break;
+            case "updateArtist":
+                updateArtist();
+                break;
+            case "deleteArtist":
+                deleteArtist();
                 break;
             default:
                 throw new UnsupportedOperationException("Not supported yet.");
@@ -193,6 +210,7 @@ public class AdminController implements ActionListener{
                     JSONArray responseData = response.getJSONArray("data");
                     this.artists = responseData;
                     
+                    //Populate the ComboBox
                     ArtPiecePanel artPiecePanel = adminView.getArtPiecesPanel();
                     JComboBox artistsUpdate = artPiecePanel.getArtistUpdate();
                     JComboBox artistAdd = artPiecePanel.getArtistAdd();
@@ -208,6 +226,17 @@ public class AdminController implements ActionListener{
                         artistsUpdate.addItem(objectComboBox(artistName));
                         artistAdd.addItem(objectComboBox(artistName));
                     }
+                    
+                    //Populate the Artist List
+                    ArtistPanel artistPanel = adminView.getArtistPanel();
+                    ElementList artistList = artistPanel.getArtistList();
+                    artistList.getListModel().clear();
+                    
+                    for (int i = 0; i < responseData.length(); i++){
+                        JSONObject artist = responseData.getJSONObject(i);
+                        artistList.addElement(artist);
+                    }
+                    
                     break;
                 default:
                     int status = response.getInt("status");
@@ -276,6 +305,43 @@ public class AdminController implements ActionListener{
             
         }
     }
+            
+    /**
+     * Filter artists based on the text given.
+     * @param text String to search in Artists.
+     */
+    public void filterArtist(String text){
+        ArtistPanel artistPanel = adminView.getArtistPanel();
+        ElementList artistList = artistPanel.getArtistList();
+        artistList.getListModel().clear();
+        
+        //Put text in lower case
+        String textLower = text.toLowerCase();
+
+        for (int i = 0; i < this.artists.length(); i++){
+            JSONObject artist = this.artists.getJSONObject(i);
+            if(textLower.equals("")){
+                artistList.addElement(artist);
+            }
+            else{
+                String name = artist.getString("first_name") + " " +artist.getString("last_name");
+                name = name.toLowerCase();
+                String website = artist.getString("website").toLowerCase();
+                String email = artist.getString("email").toLowerCase();
+                
+                if(name.contains(textLower)){
+                    artistList.addElement(artist);
+                }
+                else if(website.contains(textLower)){
+                    artistList.addElement(artist);
+                }
+                else if(email.contains(textLower)){
+                    artistList.addElement(artist);
+                }
+            }
+            
+        }
+    }
     
     /**
      * 
@@ -288,6 +354,19 @@ public class AdminController implements ActionListener{
         JSONObject artPiece = artPiecesList.getListModel().get(index).getElement();
         
         adminView.artPiecePanel.setUpdateElement(artPiece);
+    }
+    
+    /**
+     * 
+     * @param index position of the art piece in the List Model which want to
+     * be selected to show in the detail panel.
+     */
+    public void selectArtist(int index){
+        ArtistPanel artistPanel = adminView.getArtistPanel();
+        ElementList artistList = artistPanel.getArtistList();
+        JSONObject artist = artistList.getListModel().get(index).getElement();
+        
+        adminView.artistPanel.setUpdateElement(artist);
     }
     
     /**
@@ -312,6 +391,29 @@ public class AdminController implements ActionListener{
         adminView.artPiecePanel.setFilePath(path);
         adminView.artPiecePanel.setFileName(filename);
         
+    }
+    
+      /**
+     * Ask user for a image file and store the image on memory.
+     */
+    private void getFileArtist(){
+        JFileChooser fileChooser = new JFileChooser();
+        
+        //Filter to choose images.
+        FileFilter imageFilter = new FileNameExtensionFilter(
+            "Image files", ImageIO.getReaderFileSuffixes());
+        
+        fileChooser.setFileFilter(imageFilter);
+        // Open the save dialog 
+        fileChooser.showSaveDialog(null);
+        
+        //Get Path and name
+        String path=fileChooser.getSelectedFile().getAbsolutePath();
+        String filename=fileChooser.getSelectedFile().getName();
+        
+        //Store values in the Panel
+        adminView.artistPanel.setFilePath(path);
+        adminView.artistPanel.setFileName(filename);
     }
     
     /**
@@ -462,7 +564,164 @@ public class AdminController implements ActionListener{
                             responseMessage = "Art piece deleted successfully.";
                             adminView.artPiecePanel.showMessage(responseMessage, false);
                             getArtPieces();
-                            selectArtPiece(0);
+                            try{
+                                selectArtPiece(0);
+                            }catch(ArrayIndexOutOfBoundsException e){
+                                selectArtPiece(1);
+                            }
+                            break;
+                        default:
+                            responseMessage = "Error " + status + ": Please try again later.";
+                            adminView.artPiecePanel.showMessage(responseMessage, true);
+                            break;
+                    }
+
+                    adminView.topBar.setLoading(false);
+                }).start();
+            }
+            else{
+                adminView.topBar.setLoading(false);
+            }
+        }
+    }
+    
+    /**
+     * Handles all the verification and send data to the model.
+     */
+    private void addArtist(){
+        JSONObject data = adminView.artistPanel.getAddData();
+        
+        //Validate data
+        if(data.getString("biography").equals(" Biography")){
+            data.remove("biography");
+            data.put("biography", " ");
+        }
+        
+        Boolean validWebsite;
+        try {
+            new URL(data.getString("website")).toURI();
+            validWebsite = true;
+        }
+        catch (URISyntaxException | MalformedURLException e) {
+            validWebsite = false;
+        }
+        
+        if(data.getString("photo").equals("")){
+            adminView.artistPanel.showMessage("Please provide a photo", true);
+        }
+        else if(data.getString("first_name").equals(" First Name")){
+            adminView.artistPanel.showMessage("Please enter first name", true);
+        }
+        else if(data.getString("last_name").equals(" Last Name")){
+            adminView.artistPanel.showMessage("Please enter last name", true);
+        }
+        else if(data.getString("email").equals(" Email")){
+            adminView.artistPanel.showMessage("Please enter an email", true);
+        }
+        else if(!validWebsite){
+            adminView.artistPanel.showMessage("Website incorrect format.", true);
+        }
+        else if(data.getString("address").equals(" Address")){
+            adminView.artistPanel.showMessage("Please enter an address", true);
+        }
+        else{
+            adminView.topBar.setLoading(true);
+
+            new Thread(() -> {
+                JSONObject response = AdminModel.addArtist(data);
+                int status = response.getInt("status");
+                String responseMessage;
+
+                switch (status) {
+                    case 201:
+                        responseMessage = "Artist added successfully.";
+                        adminView.artistPanel.showMessage(responseMessage, false);
+                        getArtists();
+                        break;
+                    default:
+                        responseMessage = "Error " + status + ": Please try again later.";
+                        adminView.artistPanel.showMessage(responseMessage, true);
+                        break;
+                }
+
+                adminView.topBar.setLoading(false);
+            }).start();
+        }
+    }
+    
+    /**
+     * Handles update art piece, request info from view and passing to model.
+     */
+    private void updateArtist(){
+        JSONObject data = adminView.artistPanel.getUpdateData();
+        adminView.topBar.setLoading(true);
+        
+        if(data.getString("email").equals(" Email")){
+            String errorMessage = "Please select an Artist.";
+            adminView.artistPanel.showMessage(errorMessage, true);
+            adminView.topBar.setLoading(false);
+        }
+        else{
+            new Thread(() -> {
+                JSONObject response = AdminModel.updateArtist(data);
+                int status = response.getInt("status");
+                String responseMessage;
+                
+                switch (status) {
+                    case 200:
+                        responseMessage = "Artist updated successfully.";
+                        adminView.artistPanel.showMessage(responseMessage, false);
+                        getArtists();
+                        break;
+                    default:
+                        responseMessage = "Error " + status + ": Please try again later.";
+                        adminView.artistPanel.showMessage(responseMessage, true);
+                        break;
+                }
+
+                adminView.topBar.setLoading(false);
+            }).start();
+        }
+    }
+    
+    /**
+     * Handle delete artist logic.
+     */
+    private void deleteArtist(){
+        JSONObject data = adminView.artistPanel.getUpdateData();
+        adminView.topBar.setLoading(true);
+        
+        if(data.getString("email").equals(" Email")){
+            String errorMessage = "Please select an Artist..";
+            adminView.artistPanel.showMessage(errorMessage, true);
+            adminView.topBar.setLoading(false);
+        }
+        else{
+            int confirmation = JOptionPane.showConfirmDialog(
+                null, 
+                "Are you sure?", 
+                "Delete Artist",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+            );
+            
+            if(confirmation==JOptionPane.YES_OPTION){
+                new Thread(() -> {
+                    JSONObject response = AdminModel.deleteArtist(data);
+                    int status = response.getInt("status");
+                    String responseMessage;
+
+                    switch (status) {
+                        case 204:
+                            responseMessage = "Artist deleted successfully.";
+                            adminView.artPiecePanel.showMessage(responseMessage, false);
+                            getArtists();
+                            try{
+                                selectArtist(0);
+                            }catch(ArrayIndexOutOfBoundsException e){
+                                selectArtist(1);
+                            }
+                            
                             break;
                         default:
                             responseMessage = "Error " + status + ": Please try again later.";

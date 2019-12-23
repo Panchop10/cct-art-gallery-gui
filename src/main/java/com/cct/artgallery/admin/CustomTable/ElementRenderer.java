@@ -24,7 +24,6 @@
 package com.cct.artgallery.admin.CustomTable;
 
 import com.cct.artgallery.admin.AdminController;
-import com.cct.artgallery.admin.ArtPiecePanel;
 import java.awt.Color;
 import java.awt.Component;
 import javax.swing.JList;
@@ -37,9 +36,11 @@ import javax.swing.ListCellRenderer;
     public class ElementRenderer implements ListCellRenderer<Object>{
         
         private final AdminController parentController;
+        private final String          type;
         
-        public ElementRenderer(AdminController parentController){
+        public ElementRenderer(AdminController parentController, String type){
             this.parentController = parentController;
+            this.type = type;
         }
         
         @Override
@@ -53,7 +54,13 @@ import javax.swing.ListCellRenderer;
             Component component = (Component) value;
                if (isSelected){
                    component.setBackground(new Color(241, 164, 66));
-                   parentController.selectArtPiece(index);
+                   if(this.type.equals("artPiece")){
+                       parentController.selectArtPiece(index);
+                   }
+                   else if(this.type.equals("artist")){
+                       parentController.selectArtist(index);
+                   }
+                   
                } else {
                    component.setBackground(Color.WHITE);
                }
