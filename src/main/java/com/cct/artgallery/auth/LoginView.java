@@ -258,7 +258,7 @@ public class LoginView{
         }).start();
     }
     
-        /**
+    /**
      * 
      * @param message Receive an String and shows during 3 seconds a JLabel 
      * with the message as an error.

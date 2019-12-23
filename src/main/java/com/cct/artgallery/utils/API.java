@@ -32,7 +32,9 @@ public enum API
 {
     LOGIN("login/"),
     REGISTER("users/signup/"),
-    ARTPIECES("art-pieces/");
+    ARTPIECES("art-pieces/"),
+    CATEGORIES("categories/"),
+    ARTISTS("artists/");
  
     private final String envEndPoint;
     private final String HOST = "http://localhost:8000/";

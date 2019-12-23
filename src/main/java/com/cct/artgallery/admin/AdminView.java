@@ -23,7 +23,6 @@
  */
 package com.cct.artgallery.admin;
 
-import com.cct.artgallery.admin.CustomTable.ElementList;
 import com.cct.artgallery.auth.LoginView;
 import com.cct.artgallery.utils.TopBar;
 import java.awt.BorderLayout;
@@ -41,7 +40,7 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class AdminView {
     
-    private     JFrame          window;
+    public     JFrame          window;
     public      TopBar          topBar;
     private     AdminController controllerListener;
     private     MenuAdmin       menu;
@@ -150,5 +149,4 @@ public class AdminView {
     public ArtPiecePanel getArtPiecesPanel(){
         return artPiecePanel;
     }
-    
 }

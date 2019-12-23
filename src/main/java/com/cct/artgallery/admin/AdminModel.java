@@ -23,21 +23,28 @@
  */
 package com.cct.artgallery.admin;
 
-import com.cct.artgallery.auth.LoginModel;
 import com.cct.artgallery.utils.API;
-import com.cct.artgallery.utils.Constant;
-import java.io.BufferedReader;
+import com.cct.artgallery.utils.UserDetail;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPatch;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.util.EntityUtils;
 
 /**
  *
@@ -45,103 +52,297 @@ import org.json.JSONObject;
  */
 public class AdminModel {
     
-        
-    private static  HttpURLConnection connection;
-    private         JSONObject        response      = new JSONObject();
-    private         JSONArray         responseArray = new JSONArray();
-    
     /**
      * 
      * Consume the service get art pieces in the API.
      * @return status code of the service art pieces. 
      */
-    @SuppressWarnings("NestedAssignment")
-    public int getArtPieces(){
-        
-        BufferedReader reader;
-        String line;
-        StringBuilder responseContent = new StringBuilder();
-        
-        try {            
-            //Create connection and set headers.
-            URL url = new URL(API.ARTPIECES.getUrl());
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("Accept", "application/json");
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(Constant.CONNTIMEOUT.getInt());
-            connection.setReadTimeout(Constant.READTIMEOUT.getInt());
+    @SuppressWarnings("ConvertToTryWithResources")
+    public static JSONObject getArtPieces(){
+        int status = 500;
+        String responseString = "";
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            HttpGet httpget = new HttpGet(API.ARTPIECES.getUrl());
 
-            int status = connection.getResponseCode();
-            
-            if (status > 299){
-                //Get error stream and store it in responseContent
-                reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-                while((line = reader.readLine()) != null){
-                    responseContent.append(line);
+            CloseableHttpResponse newResponse = httpclient.execute(httpget);
+            try {
+                status = newResponse.getStatusLine().getStatusCode();
+                HttpEntity resEntity = newResponse.getEntity();
+                
+                if (resEntity != null) {
+                    responseString = EntityUtils.toString(resEntity);
                 }
-                reader.close();
-            }
-            else{
-                //Get input stream and store it in responseContent
-                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                while((line = reader.readLine()) != null){
-                    responseContent.append(line);
+                else{
+                    responseString = "{}";
                 }
-                reader.close();                
-                //Parse and store response in response object
-                parseArray(responseContent.toString());
+            } finally {
+                newResponse.close();
             }
-            return(status);
             
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(LoginModel.class.getName()).log(Level.SEVERE, null, ex);
-            return(500);
         } catch (IOException ex) {
-            Logger.getLogger(LoginModel.class.getName()).log(Level.SEVERE, null, ex);
-            return(500);
+            Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-            connection.disconnect();
+            try {
+                httpclient.close();
+            } catch (IOException ex) {
+                Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+            }            
         }
+        //Build the response.
+        JSONObject responseJSON = new JSONObject();
+        responseJSON.put("status", status);
+        responseJSON.put("data", new JSONArray(responseString));
+        return responseJSON;
     }
     
     /**
      * 
-     * @param responseBody Receive the response as a String
-     * and store the response parsed as a JSON in the attribute response.
-     * 
+     * Consume the service get artists in the API.
+     * @return status code of the service artists. 
      */
-    private void parse(String responseBody){
-        JSONObject data = new JSONObject(responseBody);
-        this.response = data;
+    @SuppressWarnings("ConvertToTryWithResources")
+    public static JSONObject getArtists(){
+        int status = 500;
+        String responseString = "";
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            HttpGet httpget = new HttpGet(API.ARTISTS.getUrl());
+
+            CloseableHttpResponse newResponse = httpclient.execute(httpget);
+            try {
+                status = newResponse.getStatusLine().getStatusCode();
+                HttpEntity resEntity = newResponse.getEntity();
+                
+                if (resEntity != null) {
+                    responseString = EntityUtils.toString(resEntity);
+                }
+                else{
+                    responseString = "{}";
+                }
+            } finally {
+                newResponse.close();
+            }
+            
+        } catch (IOException ex) {
+            Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                httpclient.close();
+            } catch (IOException ex) {
+                Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+            }            
+        }
+        //Build the response.
+        JSONObject responseJSON = new JSONObject();
+        responseJSON.put("status", status);
+        responseJSON.put("data", new JSONArray(responseString));
+        return responseJSON;
+    }
+    
+     /**
+     * 
+     * Consume the service get categories in the API.
+     * @return status code of the service categories. 
+     */
+    @SuppressWarnings("ConvertToTryWithResources")
+    public static JSONObject getCategories(){
+        int status = 500;
+        String responseString = "";
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            HttpGet httpget = new HttpGet(API.CATEGORIES.getUrl());
+
+            CloseableHttpResponse newResponse = httpclient.execute(httpget);
+            try {
+                status = newResponse.getStatusLine().getStatusCode();
+                HttpEntity resEntity = newResponse.getEntity();
+                
+                if (resEntity != null) {
+                    responseString = EntityUtils.toString(resEntity);
+                }
+                else{
+                    responseString = "{}";
+                }
+            } finally {
+                newResponse.close();
+            }
+            
+        } catch (IOException ex) {
+            Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                httpclient.close();
+            } catch (IOException ex) {
+                Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+            }            
+        }
+        //Build the response.
+        JSONObject responseJSON = new JSONObject();
+        responseJSON.put("status", status);
+        responseJSON.put("data", new JSONArray(responseString));
+        return responseJSON;
     }
     
     /**
      * 
-     * @param responseBody Receive the response as a String
-     * and store the response parsed as a JSONArray in the attribute response.
-     * 
+     * Consume the service add Art Piece in the API.
+     * @param  data JSONObject with the data of the request.
+     * @return status code of the service add art piece. 
      */
-    private void parseArray(String responseBody){
-        JSONArray data = new JSONArray(responseBody);
-        this.responseArray = data;
+    @SuppressWarnings("ConvertToTryWithResources")
+    public static JSONObject addArtPiece(JSONObject data){
+        int status = 500;
+        String responseString = "";
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            HttpPost httppost = new HttpPost(API.ARTPIECES.getUrl());
+            
+            httppost.addHeader(HttpHeaders.AUTHORIZATION, "Bearer "+UserDetail.getToken());
+            
+            FileBody photo = new FileBody(new File(data.getString("photo")));
+            data.remove("photo");
+            
+            StringBody dataString = new StringBody(data.toString(), ContentType.TEXT_PLAIN);
+
+            HttpEntity reqEntity = MultipartEntityBuilder.create()
+                    .addPart("photo", photo)
+                    .addPart("data", dataString)
+                    .build();
+
+
+            httppost.setEntity(reqEntity);
+
+            CloseableHttpResponse newResponse = httpclient.execute(httppost);
+            try {
+                status = newResponse.getStatusLine().getStatusCode();
+                HttpEntity resEntity = newResponse.getEntity();
+                
+                if (resEntity != null) {
+                    responseString = EntityUtils.toString(resEntity);
+                }
+                else{
+                    responseString = "{}";
+                }
+            } finally {
+                newResponse.close();
+            }
+            
+        } catch (IOException ex) {
+            Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                httpclient.close();
+            } catch (IOException ex) {
+                Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+            }            
+        }
+        JSONObject responseJSON = new JSONObject();
+        responseJSON.put("status", status);
+        responseJSON.put("data", new JSONObject(responseString));
+        return responseJSON;
     }
     
     /**
      * 
-     * @return Response of the end point parsed as a JSONObject.
+     * Consume the service patch Art Piece in the API.
+     * @param  data JSONObject with the data of the request.
+     * @return status code of the service patch art piece. 
      */
-    public JSONObject getResponse(){
-        return response;
+    @SuppressWarnings("ConvertToTryWithResources")
+    public static JSONObject updateArtPiece(JSONObject data){
+        int status = 500;
+        String responseString = "";
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            String url = API.ARTPIECES.getUrl() + data.getString("slug_name")+"/";
+            HttpPatch httppatch = new HttpPatch(url);
+            
+            httppatch.addHeader(HttpHeaders.AUTHORIZATION, "Bearer "+UserDetail.getToken());
+            
+            StringBody dataString = new StringBody(data.toString(), ContentType.TEXT_PLAIN);
+
+            HttpEntity reqEntity = MultipartEntityBuilder.create()
+                    .addPart("data", dataString)
+                    .build();
+            
+            httppatch.setEntity(reqEntity);
+
+            CloseableHttpResponse newResponse = httpclient.execute(httppatch);
+            try {
+                status = newResponse.getStatusLine().getStatusCode();
+                HttpEntity resEntity = newResponse.getEntity();
+                
+                if (resEntity != null) {
+                    responseString = EntityUtils.toString(resEntity);
+                }
+                else{
+                    responseString = "{}";
+                }
+            } finally {
+                newResponse.close();
+            }
+            
+        } catch (IOException ex) {
+            Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                httpclient.close();
+            } catch (IOException ex) {
+                Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+            }            
+        }
+        JSONObject responseJSON = new JSONObject();
+        responseJSON.put("status", status);
+        responseJSON.put("data", new JSONObject(responseString));
+        return responseJSON;
     }
     
     /**
      * 
-     * @return Response of the end point parsed as a JSONArray.
+     * Consume the service patch Art Piece in the API.
+     * @param  data JSONObject with the data of the request.
+     * @return status code of the service patch art piece. 
      */
-    public JSONArray getResponseArray(){
-        return responseArray;
+    @SuppressWarnings("ConvertToTryWithResources")
+    public static JSONObject deleteArtPiece(JSONObject data){
+        int status = 500;
+        String responseString = "";
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            String url = API.ARTPIECES.getUrl() + data.getString("slug_name")+"/";
+            HttpDelete httpdelete = new HttpDelete(url);
+            
+            httpdelete.addHeader(HttpHeaders.AUTHORIZATION, "Bearer "+UserDetail.getToken());
+
+            CloseableHttpResponse newResponse = httpclient.execute(httpdelete);
+            try {
+                status = newResponse.getStatusLine().getStatusCode();
+                HttpEntity resEntity = newResponse.getEntity();
+                
+                if (resEntity != null) {
+                    responseString = EntityUtils.toString(resEntity);
+                }
+                else{
+                    responseString = "{}";
+                }
+                
+            } finally {
+                newResponse.close();
+            }
+            
+        } catch (IOException ex) {
+            Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                httpclient.close();
+            } catch (IOException ex) {
+                Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+            }            
+        }
+        JSONObject responseJSON = new JSONObject();
+        responseJSON.put("status", status);
+        responseJSON.put("data", new JSONObject(responseString));
+        return responseJSON;
     }
-    
 }
