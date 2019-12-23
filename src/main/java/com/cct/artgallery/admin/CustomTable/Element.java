@@ -107,6 +107,30 @@ import org.json.JSONObject;
                 email.setMaximumSize(new Dimension(250, 20));
                 this.add(email);
             }
+            
+            if(type.equals("user")){
+                String userFirstName = element.getString("first_name");
+                String userLastName = element.getString("last_name");
+                JLabel name = new JLabel(userFirstName + " " + userLastName);
+                name.setFont(roboto.deriveFont(Font.PLAIN, 10f));
+                name.setPreferredSize(new Dimension(250, 20));
+                name.setMaximumSize(new Dimension(250, 20));
+                this.add(name);
+                
+                String usernameName = element.getString("username");
+                JLabel username = new JLabel(usernameName);
+                username.setFont(roboto.deriveFont(Font.PLAIN, 10f));
+                username.setPreferredSize(new Dimension(200, 20));
+                username.setMaximumSize(new Dimension(200, 20));
+                this.add(username);
+                
+                String emailName = element.getString("email");
+                JLabel email = new JLabel(emailName);
+                email.setFont(roboto.deriveFont(Font.PLAIN, 10f));
+                email.setPreferredSize(new Dimension(250, 20));
+                email.setMaximumSize(new Dimension(250, 20));
+                this.add(email);
+            }
         }
         
         public JSONObject getElement(){

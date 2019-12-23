@@ -53,6 +53,7 @@ public class AdminController implements ActionListener{
     private       JSONArray         artPieces;
     private       JSONArray         categories;
     private       JSONArray         artists;
+    private       JSONArray         users;
     
     public AdminController(AuthController parentController){
         authController = parentController;
@@ -83,6 +84,7 @@ public class AdminController implements ActionListener{
             case "usersMenu":
                 menu.setActive(e.getActionCommand());
                 adminView.updateContent(e.getActionCommand());
+                getUsers();
                 break;
             case "logout":
                 adminView.dispose();
@@ -112,6 +114,15 @@ public class AdminController implements ActionListener{
                 break;
             case "deleteArtist":
                 deleteArtist();
+                break;
+            case "addUser":
+                addUser();
+                break;
+            case "updateUser":
+                updateUser();
+                break;
+            case "deleteUser":
+                deleteUser();
                 break;
             default:
                 throw new UnsupportedOperationException("Not supported yet.");
@@ -145,7 +156,7 @@ public class AdminController implements ActionListener{
                 default:
                     int status = response.getInt("status");
                     String responseMessage = "Error " + status + ": Please try again later.";
-                    adminView.artPiecePanel.showMessage(responseMessage, true);
+                    adminView.getArtPiecesPanel().showMessage(responseMessage, true);
                     break;
             }
 
@@ -187,7 +198,7 @@ public class AdminController implements ActionListener{
                 default:
                     int status = response.getInt("status");
                     String responseMessage = "Error " + status + ": Please try again later.";
-                    adminView.artPiecePanel.showMessage(responseMessage, true);
+                    adminView.getArtPiecesPanel().showMessage(responseMessage, true);
                     break;
             }
             adminView.topBar.setLoading(false);
@@ -241,7 +252,8 @@ public class AdminController implements ActionListener{
                 default:
                     int status = response.getInt("status");
                     String responseMessage = "Error " + status + ": Please try again later.";
-                    adminView.artPiecePanel.showMessage(responseMessage, true);
+                    adminView.getArtPiecesPanel().showMessage(responseMessage, true);
+                    adminView.getArtistPanel().showMessage(responseMessage, true);
                     break;
             }
             adminView.topBar.setLoading(false);
@@ -344,6 +356,43 @@ public class AdminController implements ActionListener{
     }
     
     /**
+     * Filter artists based on the text given.
+     * @param text String to search in Artists.
+     */
+    public void filterUser(String text){
+        UserPanel userPanel = adminView.getUserPanel();
+        ElementList userList = userPanel.getUserList();
+        userList.getListModel().clear();
+        
+        //Put text in lower case
+        String textLower = text.toLowerCase();
+
+        for (int i = 0; i < this.users.length(); i++){
+            JSONObject user = this.users.getJSONObject(i);
+            if(textLower.equals("")){
+                userList.addElement(user);
+            }
+            else{
+                String name = user.getString("first_name") + " " +user.getString("last_name");
+                name = name.toLowerCase();
+                String username = user.getString("username").toLowerCase();
+                String email = user.getString("email").toLowerCase();
+                
+                if(name.contains(textLower)){
+                    userList.addElement(user);
+                }
+                else if(username.contains(textLower)){
+                    userList.addElement(user);
+                }
+                else if(email.contains(textLower)){
+                    userList.addElement(user);
+                }
+            }
+            
+        }
+    }
+    
+    /**
      * 
      * @param index position of the art piece in the List Model which want to
      * be selected to show in the detail panel.
@@ -353,7 +402,7 @@ public class AdminController implements ActionListener{
         ElementList artPiecesList = artPiecePanel.getArtPiecesList();
         JSONObject artPiece = artPiecesList.getListModel().get(index).getElement();
         
-        adminView.artPiecePanel.setUpdateElement(artPiece);
+        adminView.getArtPiecesPanel().setUpdateElement(artPiece);
     }
     
     /**
@@ -366,7 +415,20 @@ public class AdminController implements ActionListener{
         ElementList artistList = artistPanel.getArtistList();
         JSONObject artist = artistList.getListModel().get(index).getElement();
         
-        adminView.artistPanel.setUpdateElement(artist);
+        adminView.getArtistPanel().setUpdateElement(artist);
+    }
+    
+    /**
+     * 
+     * @param index position of the art piece in the List Model which want to
+     * be selected to show in the detail panel.
+     */
+    public void selectUser(int index){
+        UserPanel userPanel = adminView.getUserPanel();
+        ElementList userList = userPanel.getUserList();
+        JSONObject user = userList.getListModel().get(index).getElement();
+        
+        adminView.getUserPanel().setUpdateElement(user);
     }
     
     /**
@@ -388,8 +450,8 @@ public class AdminController implements ActionListener{
         String filename=fileChooser.getSelectedFile().getName();
         
         //Store values in the Panel
-        adminView.artPiecePanel.setFilePath(path);
-        adminView.artPiecePanel.setFileName(filename);
+        adminView.getArtPiecesPanel().setFilePath(path);
+        adminView.getArtPiecesPanel().setFileName(filename);
         
     }
     
@@ -412,15 +474,15 @@ public class AdminController implements ActionListener{
         String filename=fileChooser.getSelectedFile().getName();
         
         //Store values in the Panel
-        adminView.artistPanel.setFilePath(path);
-        adminView.artistPanel.setFileName(filename);
+        adminView.getArtistPanel().setFilePath(path);
+        adminView.getArtistPanel().setFileName(filename);
     }
     
     /**
      * Handles all the verification and send data to the model.
      */
     private void addArtPiece(){
-        JSONObject data = adminView.artPiecePanel.getAddData();
+        JSONObject data = adminView.getArtPiecesPanel().getAddData();
         
         //Validate data
         if(data.getString("description").equals(" Description")){
@@ -429,19 +491,19 @@ public class AdminController implements ActionListener{
         }
         
         if(data.getString("photo").equals("")){
-            adminView.artPiecePanel.showMessage("Please provide a photo", true);
+            adminView.getArtPiecesPanel().showMessage("Please provide a photo", true);
         }
         else if(data.getInt("category")==0){
-            adminView.artPiecePanel.showMessage("Please select a category", true);
+            adminView.getArtPiecesPanel().showMessage("Please select a category", true);
         }
         else if(data.getInt("artist")==0){
-            adminView.artPiecePanel.showMessage("Please select an artist", true);
+            adminView.getArtPiecesPanel().showMessage("Please select an artist", true);
         }
         else if(data.getString("name").equals(" Title")){
-            adminView.artPiecePanel.showMessage("Please enter a title", true);
+            adminView.getArtPiecesPanel().showMessage("Please enter a title", true);
         }
         else if(data.getString("price").equals(" Price")){
-            adminView.artPiecePanel.showMessage("Please enter a price", true);
+            adminView.getArtPiecesPanel().showMessage("Please enter a price", true);
         }
         else {
             //Convert string price into int
@@ -475,12 +537,12 @@ public class AdminController implements ActionListener{
             switch (status) {
                 case 201:
                     responseMessage = "Art piece added successfully.";
-                    adminView.artPiecePanel.showMessage(responseMessage, false);
+                    adminView.getArtPiecesPanel().showMessage(responseMessage, false);
                     getArtPieces();
                     break;
                 default:
                     responseMessage = "Error " + status + ": Please try again later.";
-                    adminView.artPiecePanel.showMessage(responseMessage, true);
+                    adminView.getArtPiecesPanel().showMessage(responseMessage, true);
                     break;
             }
 
@@ -489,12 +551,12 @@ public class AdminController implements ActionListener{
     }
     
     private void updateArtPiece(){
-        JSONObject data = adminView.artPiecePanel.getUpdateData();
+        JSONObject data = adminView.getArtPiecesPanel().getUpdateData();
         adminView.topBar.setLoading(true);
         
         if(data.getString("price").equals(" Price")){
             String errorMessage = "Please select an Art piece.";
-            adminView.artPiecePanel.showMessage(errorMessage, true);
+            adminView.getArtPiecesPanel().showMessage(errorMessage, true);
             adminView.topBar.setLoading(false);
         }
         else{
@@ -521,12 +583,12 @@ public class AdminController implements ActionListener{
                 switch (status) {
                     case 200:
                         responseMessage = "Art piece updated successfully.";
-                        adminView.artPiecePanel.showMessage(responseMessage, false);
+                        adminView.getArtPiecesPanel().showMessage(responseMessage, false);
                         getArtPieces();
                         break;
                     default:
                         responseMessage = "Error " + status + ": Please try again later.";
-                        adminView.artPiecePanel.showMessage(responseMessage, true);
+                        adminView.getArtPiecesPanel().showMessage(responseMessage, true);
                         break;
                 }
 
@@ -536,12 +598,12 @@ public class AdminController implements ActionListener{
     }
     
     private void deleteArtPiece(){
-        JSONObject data = adminView.artPiecePanel.getUpdateData();
+        JSONObject data = adminView.getArtPiecesPanel().getUpdateData();
         adminView.topBar.setLoading(true);
         
         if(data.getString("price").equals(" Price")){
             String errorMessage = "Please select an Art piece.";
-            adminView.artPiecePanel.showMessage(errorMessage, true);
+            adminView.getArtPiecesPanel().showMessage(errorMessage, true);
             adminView.topBar.setLoading(false);
         }
         else{
@@ -562,7 +624,7 @@ public class AdminController implements ActionListener{
                     switch (status) {
                         case 204:
                             responseMessage = "Art piece deleted successfully.";
-                            adminView.artPiecePanel.showMessage(responseMessage, false);
+                            adminView.getArtPiecesPanel().showMessage(responseMessage, false);
                             getArtPieces();
                             try{
                                 selectArtPiece(0);
@@ -572,7 +634,7 @@ public class AdminController implements ActionListener{
                             break;
                         default:
                             responseMessage = "Error " + status + ": Please try again later.";
-                            adminView.artPiecePanel.showMessage(responseMessage, true);
+                            adminView.getArtPiecesPanel().showMessage(responseMessage, true);
                             break;
                     }
 
@@ -589,7 +651,7 @@ public class AdminController implements ActionListener{
      * Handles all the verification and send data to the model.
      */
     private void addArtist(){
-        JSONObject data = adminView.artistPanel.getAddData();
+        JSONObject data = adminView.getArtistPanel().getAddData();
         
         //Validate data
         if(data.getString("biography").equals(" Biography")){
@@ -607,22 +669,22 @@ public class AdminController implements ActionListener{
         }
         
         if(data.getString("photo").equals("")){
-            adminView.artistPanel.showMessage("Please provide a photo", true);
+            adminView.getArtistPanel().showMessage("Please provide a photo", true);
         }
         else if(data.getString("first_name").equals(" First Name")){
-            adminView.artistPanel.showMessage("Please enter first name", true);
+            adminView.getArtistPanel().showMessage("Please enter first name", true);
         }
         else if(data.getString("last_name").equals(" Last Name")){
-            adminView.artistPanel.showMessage("Please enter last name", true);
+            adminView.getArtistPanel().showMessage("Please enter last name", true);
         }
         else if(data.getString("email").equals(" Email")){
-            adminView.artistPanel.showMessage("Please enter an email", true);
+            adminView.getArtistPanel().showMessage("Please enter an email", true);
         }
         else if(!validWebsite){
-            adminView.artistPanel.showMessage("Website incorrect format.", true);
+            adminView.getArtistPanel().showMessage("Website incorrect format.", true);
         }
         else if(data.getString("address").equals(" Address")){
-            adminView.artistPanel.showMessage("Please enter an address", true);
+            adminView.getArtistPanel().showMessage("Please enter an address", true);
         }
         else{
             adminView.topBar.setLoading(true);
@@ -635,12 +697,12 @@ public class AdminController implements ActionListener{
                 switch (status) {
                     case 201:
                         responseMessage = "Artist added successfully.";
-                        adminView.artistPanel.showMessage(responseMessage, false);
+                        adminView.getArtistPanel().showMessage(responseMessage, false);
                         getArtists();
                         break;
                     default:
                         responseMessage = "Error " + status + ": Please try again later.";
-                        adminView.artistPanel.showMessage(responseMessage, true);
+                        adminView.getArtistPanel().showMessage(responseMessage, true);
                         break;
                 }
 
@@ -653,12 +715,12 @@ public class AdminController implements ActionListener{
      * Handles update art piece, request info from view and passing to model.
      */
     private void updateArtist(){
-        JSONObject data = adminView.artistPanel.getUpdateData();
+        JSONObject data = adminView.getArtistPanel().getUpdateData();
         adminView.topBar.setLoading(true);
         
         if(data.getString("email").equals(" Email")){
             String errorMessage = "Please select an Artist.";
-            adminView.artistPanel.showMessage(errorMessage, true);
+            adminView.getArtistPanel().showMessage(errorMessage, true);
             adminView.topBar.setLoading(false);
         }
         else{
@@ -670,12 +732,12 @@ public class AdminController implements ActionListener{
                 switch (status) {
                     case 200:
                         responseMessage = "Artist updated successfully.";
-                        adminView.artistPanel.showMessage(responseMessage, false);
+                        adminView.getArtistPanel().showMessage(responseMessage, false);
                         getArtists();
                         break;
                     default:
                         responseMessage = "Error " + status + ": Please try again later.";
-                        adminView.artistPanel.showMessage(responseMessage, true);
+                        adminView.getArtistPanel().showMessage(responseMessage, true);
                         break;
                 }
 
@@ -688,12 +750,12 @@ public class AdminController implements ActionListener{
      * Handle delete artist logic.
      */
     private void deleteArtist(){
-        JSONObject data = adminView.artistPanel.getUpdateData();
+        JSONObject data = adminView.getArtistPanel().getUpdateData();
         adminView.topBar.setLoading(true);
         
         if(data.getString("email").equals(" Email")){
             String errorMessage = "Please select an Artist..";
-            adminView.artistPanel.showMessage(errorMessage, true);
+            adminView.getArtistPanel().showMessage(errorMessage, true);
             adminView.topBar.setLoading(false);
         }
         else{
@@ -714,7 +776,7 @@ public class AdminController implements ActionListener{
                     switch (status) {
                         case 204:
                             responseMessage = "Artist deleted successfully.";
-                            adminView.artPiecePanel.showMessage(responseMessage, false);
+                            adminView.getArtistPanel().showMessage(responseMessage, false);
                             getArtists();
                             try{
                                 selectArtist(0);
@@ -725,7 +787,183 @@ public class AdminController implements ActionListener{
                             break;
                         default:
                             responseMessage = "Error " + status + ": Please try again later.";
-                            adminView.artPiecePanel.showMessage(responseMessage, true);
+                            adminView.getArtistPanel().showMessage(responseMessage, true);
+                            break;
+                    }
+
+                    adminView.topBar.setLoading(false);
+                }).start();
+            }
+            else{
+                adminView.topBar.setLoading(false);
+            }
+        }
+    }
+    
+    /**
+     * Request Users to the model and populates the list in the View.
+     */
+    private void getUsers(){
+        adminView.topBar.setLoading(true);
+
+        new Thread(() -> {
+            JSONObject response = AdminModel.getUsers();
+
+            switch (response.getInt("status")) {
+                case 200:
+                    //Populate the UserList with the data from the model.
+                    JSONArray responseData = response.getJSONArray("data");
+                    this.users = responseData;
+                    
+                    //Populate the User List
+                    UserPanel userPanel = adminView.getUserPanel();
+                    ElementList userList = userPanel.getUserList();
+                    userList.getListModel().clear();
+                    
+                    for (int i = 0; i < responseData.length(); i++){
+                        JSONObject user = responseData.getJSONObject(i);
+                        userList.addElement(user);
+                    }
+                    
+                    break;
+                default:
+                    int status = response.getInt("status");
+                    String responseMessage = "Error " + status + ": Please try again later.";
+                    adminView.getUserPanel().showMessage(responseMessage, true);
+                    break;
+            }
+            adminView.topBar.setLoading(false);
+        }).start();
+    }
+    
+    /**
+     * Handles all the verification and send data to the model.
+     */
+    private void addUser(){
+        JSONObject data = adminView.getUserPanel().getAddData();
+        
+        //Validate data
+        if(!data.getString("password").equals(data.getString("password_confirmation"))){
+            adminView.getUserPanel().showMessage("Password does not match.", true);
+        }
+        
+        if(data.getString("first_name").equals(" First Name")){
+            adminView.getUserPanel().showMessage("Please enter first name", true);
+        }
+        else if(data.getString("last_name").equals(" Last Name")){
+            adminView.getUserPanel().showMessage("Please enter last name", true);
+        }
+        else if(data.getString("username").equals(" Username")){
+            adminView.getUserPanel().showMessage("Please enter a username", true);
+        }
+        else if(data.getString("email").equals(" Email")){
+            adminView.getUserPanel().showMessage("Please enter an email", true);
+        }
+        else if(data.getString("address").equals(" Address")){
+            adminView.getUserPanel().showMessage("Please enter an address", true);
+        }
+        else{
+            adminView.topBar.setLoading(true);
+
+            new Thread(() -> {
+                JSONObject response = AdminModel.addAdmin(data);
+                int status = response.getInt("status");
+                String responseMessage;
+
+                switch (status) {
+                    case 201:
+                        responseMessage = "User added successfully.";
+                        adminView.getUserPanel().showMessage(responseMessage, false);
+                        getUsers();
+                        break;
+                    default:
+                        responseMessage = "Error " + status + ": Please try again later.";
+                        adminView.getUserPanel().showMessage(responseMessage, true);
+                        break;
+                }
+
+                adminView.topBar.setLoading(false);
+            }).start();
+        }
+    }
+    
+    /**
+     * Handles update user, request info from view and passing to model.
+     */
+    private void updateUser(){
+        JSONObject data = adminView.getUserPanel().getUpdateData();
+        adminView.topBar.setLoading(true);
+        
+        if(data.getString("email").equals(" Email")){
+            String errorMessage = "Please select a User.";
+            adminView.getArtistPanel().showMessage(errorMessage, true);
+            adminView.topBar.setLoading(false);
+        }
+        else{
+            new Thread(() -> {
+                JSONObject response = AdminModel.updateAdmin(data);
+                int status = response.getInt("status");
+                String responseMessage;
+                
+                switch (status) {
+                    case 200:
+                        responseMessage = "User updated successfully.";
+                        adminView.getUserPanel().showMessage(responseMessage, false);
+                        getUsers();
+                        break;
+                    default:
+                        responseMessage = "Error " + status + ": Please try again later.";
+                        adminView.getUserPanel().showMessage(responseMessage, true);
+                        break;
+                }
+
+                adminView.topBar.setLoading(false);
+            }).start();
+        }
+    }
+    
+     /**
+     * Handle delete user logic.
+     */
+    private void deleteUser(){
+        JSONObject data = adminView.getUserPanel().getUpdateData();
+        adminView.topBar.setLoading(true);
+        
+        if(data.getString("email").equals(" Email")){
+            String errorMessage = "Please select a User..";
+            adminView.getArtistPanel().showMessage(errorMessage, true);
+            adminView.topBar.setLoading(false);
+        }
+        else{
+            int confirmation = JOptionPane.showConfirmDialog(
+                null, 
+                "Are you sure?", 
+                "Delete User",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+            );
+            
+            if(confirmation==JOptionPane.YES_OPTION){
+                new Thread(() -> {
+                    JSONObject response = AdminModel.deleteUser(data);
+                    int status = response.getInt("status");
+                    String responseMessage;
+
+                    switch (status) {
+                        case 204:
+                            responseMessage = "Artist deleted successfully.";
+                            adminView.getUserPanel().showMessage(responseMessage, false);
+                            getUsers();
+                            try{
+                                selectArtist(0);
+                            }catch(ArrayIndexOutOfBoundsException e){
+                                selectArtist(1);
+                            }
+                            
+                            break;
+                        default:
+                            responseMessage = "Error " + status + ": Please try again later.";
+                            adminView.getUserPanel().showMessage(responseMessage, true);
                             break;
                     }
 

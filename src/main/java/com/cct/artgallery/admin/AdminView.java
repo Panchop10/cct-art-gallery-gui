@@ -44,8 +44,9 @@ public class AdminView {
     public      TopBar          topBar;
     private     AdminController controllerListener;
     private     MenuAdmin       menu;
-    public      ArtPiecePanel   artPiecePanel;
-    public      ArtistPanel     artistPanel;
+    private     ArtPiecePanel   artPiecePanel;
+    private     ArtistPanel     artistPanel;
+    private     UserPanel       userPanel;
     
     public AdminView(AdminController controller, MenuAdmin menu){
         this.controllerListener = controller;
@@ -80,7 +81,8 @@ public class AdminView {
             content.add(artPiecePanel);
             
             //Create the others panels to load faster when the user open them.
-            artistPanel = new ArtistPanel(controllerListener);  
+            artistPanel = new ArtistPanel(controllerListener); 
+            userPanel = new UserPanel(controllerListener); 
             //artPiecePanel = new ArtPiecePanel(controllerListener);  
             
 
@@ -101,10 +103,10 @@ public class AdminView {
                 updateArtistPanel();
                 break;
             case "usersMenu":
-                updateMainPanel(new UserPanel(controllerListener));
+                updateUserPanel();
                 break;
             default:
-                updateMainPanel(new ArtPiecePanel(controllerListener));
+                updateArtPiecePanel();
         }
         
         window.validate();
@@ -129,8 +131,8 @@ public class AdminView {
         content.add(artPiecePanel);
     }
     
-        /**
-     * Create new art piece panel and store it in the attribute.
+    /**
+     * Create new artist panel and store it in the attribute.
      */
     private void updateArtistPanel(){
         window.getContentPane().remove(1);
@@ -147,7 +149,10 @@ public class AdminView {
         content.add(artistPanel);
     }
     
-    private void updateMainPanel(JPanel mainContent){
+    /**
+     * Create new users panel and store it in the attribute.
+     */
+    private void updateUserPanel(){
         window.getContentPane().remove(1);
         //Content Panel which contains menu and content.
         JPanel content = new JPanel();
@@ -157,9 +162,10 @@ public class AdminView {
         //Add menu left to the left content panel.
         content.add(this.menu);
 
-        //Add ArtPiecePanel as default content to the right panel.  
-        content.add(mainContent);
-    } 
+        //Add ArtistPanel as content to the right panel. 
+        this.userPanel = new UserPanel(controllerListener);
+        content.add(userPanel);
+    }
     
     /**
      * Dispose Administrator JFrame
@@ -182,5 +188,13 @@ public class AdminView {
      */
     public ArtistPanel getArtistPanel(){
         return artistPanel;
+    }
+    
+    /**
+     * 
+     * @return ElementList with all the active elements in the Panel Art Pieces. 
+     */
+    public UserPanel getUserPanel(){
+        return userPanel;
     }
 }

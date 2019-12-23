@@ -60,6 +60,9 @@ import javax.swing.ListCellRenderer;
                    else if(this.type.equals("artist")){
                        parentController.selectArtist(index);
                    }
+                   else if(this.type.equals("user")){
+                       parentController.selectUser(index);
+                   }
                    
                } else {
                    component.setBackground(Color.WHITE);

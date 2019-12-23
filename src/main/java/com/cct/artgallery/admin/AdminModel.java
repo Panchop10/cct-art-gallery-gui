@@ -37,6 +37,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -72,6 +73,7 @@ public class AdminModel {
                 
                 if (resEntity != null) {
                     responseString = EntityUtils.toString(resEntity);
+                    System.out.println(responseString);
                 }
                 else{
                     responseString = "{}";
@@ -116,6 +118,7 @@ public class AdminModel {
                 
                 if (resEntity != null) {
                     responseString = EntityUtils.toString(resEntity);
+                    System.out.println(responseString);
                 }
                 else{
                     responseString = "{}";
@@ -160,6 +163,7 @@ public class AdminModel {
                 
                 if (resEntity != null) {
                     responseString = EntityUtils.toString(resEntity);
+                    System.out.println(responseString);
                 }
                 else{
                     responseString = "{}";
@@ -220,6 +224,7 @@ public class AdminModel {
                 
                 if (resEntity != null) {
                     responseString = EntityUtils.toString(resEntity);
+                    System.out.println(responseString);
                 }
                 else{
                     responseString = "{}";
@@ -275,6 +280,7 @@ public class AdminModel {
                 
                 if (resEntity != null) {
                     responseString = EntityUtils.toString(resEntity);
+                    System.out.println(responseString);
                 }
                 else{
                     responseString = "{}";
@@ -322,6 +328,7 @@ public class AdminModel {
                 
                 if (resEntity != null) {
                     responseString = EntityUtils.toString(resEntity);
+                    System.out.println(responseString);
                 }
                 else{
                     responseString = "{}";
@@ -382,6 +389,7 @@ public class AdminModel {
                 
                 if (resEntity != null) {
                     responseString = EntityUtils.toString(resEntity);
+                    System.out.println(responseString);
                 }
                 else{
                     responseString = "{}";
@@ -437,6 +445,7 @@ public class AdminModel {
                 
                 if (resEntity != null) {
                     responseString = EntityUtils.toString(resEntity);
+                    System.out.println(responseString);
                 }
                 else{
                     responseString = "{}";
@@ -485,6 +494,216 @@ public class AdminModel {
                 
                 if (resEntity != null) {
                     responseString = EntityUtils.toString(resEntity);
+                    System.out.println(responseString);
+                }
+                else{
+                    responseString = "{}";
+                }
+                
+            } finally {
+                newResponse.close();
+            }
+            
+        } catch (IOException ex) {
+            Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                httpclient.close();
+            } catch (IOException ex) {
+                Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+            }            
+        }
+        JSONObject responseJSON = new JSONObject();
+        responseJSON.put("status", status);
+        responseJSON.put("data", new JSONObject(responseString));
+        return responseJSON;
+    }
+    
+        
+     /**
+     * 
+     * Consume the service get users in the API.
+     * @return status code of the service categories. 
+     */
+    @SuppressWarnings("ConvertToTryWithResources")
+    public static JSONObject getUsers(){
+        int status = 500;
+        String responseString = "";
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            String url = API.USERS.getUrl() + "?is_admin=true";
+            HttpGet httpget = new HttpGet(url);
+            
+            httpget.addHeader(HttpHeaders.AUTHORIZATION, "Bearer "+UserDetail.getToken());
+
+            CloseableHttpResponse newResponse = httpclient.execute(httpget);
+            try {
+                status = newResponse.getStatusLine().getStatusCode();
+                HttpEntity resEntity = newResponse.getEntity();
+                
+                if (resEntity != null) {
+                    responseString = EntityUtils.toString(resEntity);
+                    System.out.println(responseString);
+                }
+                else{
+                    responseString = "{}";
+                }
+            } finally {
+                newResponse.close();
+            }
+            
+        } catch (IOException ex) {
+            Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                httpclient.close();
+            } catch (IOException ex) {
+                Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+            }            
+        }
+        //Build the response.
+        JSONObject responseJSON = new JSONObject();
+        responseJSON.put("status", status);
+        responseJSON.put("data", new JSONArray(responseString));
+        return responseJSON;
+    }
+    
+        
+    /**
+     * 
+     * Consume the service add user admin in the API.
+     * @param  data JSONObject with the data of the request.
+     * @return status code of the service add user admin. 
+     */
+    @SuppressWarnings("ConvertToTryWithResources")
+    public static JSONObject addAdmin(JSONObject data){
+        int status = 500;
+        String responseString = "";
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            HttpPost httppost = new HttpPost(API.ADMIN.getUrl());
+            
+            httppost.addHeader(HttpHeaders.AUTHORIZATION, "Bearer "+UserDetail.getToken());
+            
+            StringEntity reqEntity = new StringEntity(
+                    data.toString(),
+                    ContentType.APPLICATION_JSON
+            );
+
+            httppost.setEntity(reqEntity);
+
+            CloseableHttpResponse newResponse = httpclient.execute(httppost);
+            try {
+                status = newResponse.getStatusLine().getStatusCode();
+                HttpEntity resEntity = newResponse.getEntity();
+                
+                if (resEntity != null) {
+                    responseString = EntityUtils.toString(resEntity);
+                    System.out.println(responseString);
+                }
+                else{
+                    responseString = "{}";
+                }
+            } finally {
+                newResponse.close();
+            }
+            
+        } catch (IOException ex) {
+            Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                httpclient.close();
+            } catch (IOException ex) {
+                Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+            }            
+        }
+        JSONObject responseJSON = new JSONObject();
+        responseJSON.put("status", status);
+        responseJSON.put("data", new JSONObject(responseString));
+        return responseJSON;
+    }
+    
+    /**
+     * 
+     * Consume the service patch Users in the API.
+     * @param  data JSONObject with the data of the request.
+     * @return status code of the service patch users. 
+     */
+    @SuppressWarnings("ConvertToTryWithResources")
+    public static JSONObject updateAdmin(JSONObject data){
+        int status = 500;
+        String responseString = "";
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            String url = API.USERS.getUrl() + data.getString("slug_name")+"/";
+            HttpPatch httppatch = new HttpPatch(url);
+            
+            httppatch.addHeader(HttpHeaders.AUTHORIZATION, "Bearer "+UserDetail.getToken());
+            
+            StringBody dataString = new StringBody(data.toString(), ContentType.TEXT_PLAIN);
+
+            HttpEntity reqEntity = MultipartEntityBuilder.create()
+                    .addPart("data", dataString)
+                    .build();
+            
+            httppatch.setEntity(reqEntity);
+
+            CloseableHttpResponse newResponse = httpclient.execute(httppatch);
+            try {
+                status = newResponse.getStatusLine().getStatusCode();
+                HttpEntity resEntity = newResponse.getEntity();
+                
+                if (resEntity != null) {
+                    responseString = EntityUtils.toString(resEntity);
+                    System.out.println(responseString);
+                }
+                else{
+                    responseString = "{}";
+                }
+            } finally {
+                newResponse.close();
+            }
+            
+        } catch (IOException ex) {
+            Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                httpclient.close();
+            } catch (IOException ex) {
+                Logger.getLogger(AdminModel.class.getName()).log(Level.SEVERE, null, ex);
+            }            
+        }
+        JSONObject responseJSON = new JSONObject();
+        responseJSON.put("status", status);
+        responseJSON.put("data", new JSONObject(responseString));
+        return responseJSON;
+    }
+    
+     /**
+     * 
+     * Consume the service delete User in the API.
+     * @param  data JSONObject with the data of the request.
+     * @return status code of the service delete user. 
+     */
+    @SuppressWarnings("ConvertToTryWithResources")
+    public static JSONObject deleteUser(JSONObject data){
+        int status = 500;
+        String responseString = "";
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            String url = API.USERS.getUrl() + data.getString("slug_name")+"/";
+            HttpDelete httpdelete = new HttpDelete(url);
+            
+            httpdelete.addHeader(HttpHeaders.AUTHORIZATION, "Bearer "+UserDetail.getToken());
+
+            CloseableHttpResponse newResponse = httpclient.execute(httpdelete);
+            try {
+                status = newResponse.getStatusLine().getStatusCode();
+                HttpEntity resEntity = newResponse.getEntity();
+                
+                if (resEntity != null) {
+                    responseString = EntityUtils.toString(resEntity);
+                    System.out.println(responseString);
                 }
                 else{
                     responseString = "{}";
