@@ -152,7 +152,7 @@ public class MenuPublic extends JLabel {
         
         //Add listener to menu option
         profileMenu.addActionListener((ActionListener) controllerListener);
-        profileMenu.setActionCommand("usersMenu");
+        profileMenu.setActionCommand("profileMenu");
         this.add(profileMenu);
         
         //Profile button

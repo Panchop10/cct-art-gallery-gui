@@ -45,6 +45,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -57,7 +58,7 @@ public class LoginView{
     
     private JFrame          window;
     private JTextField      loginEmail;
-    private JTextField      loginPassword;
+    private JPasswordField  loginPassword;
     private AuthController  controllerListener;
     private JLabel          errorLabel;
     private JLabel          sucessLabel;
@@ -162,8 +163,7 @@ public class LoginView{
             loginPanel.add(Box.createRigidArea(new Dimension(0, 20)));
             
             //Create and add password JTextField            
-            loginPassword = new JTextField(" Password");
-            loginPassword.setFont(roboto.deriveFont(Font.PLAIN, 12f));
+            loginPassword = new JPasswordField(" Password");
             loginPassword.setForeground(Color.GRAY);
             loginPassword.addFocusListener(new FocusListener() {
                 @Override
@@ -236,7 +236,7 @@ public class LoginView{
     public Map<String, String> getData(){
         Map<String, String> data = new HashMap<>();
         data.put("email", loginEmail.getText());
-        data.put("password", loginPassword.getText());
+        data.put("password", new String(loginPassword.getPassword()));
         
         return data;
     }

@@ -45,6 +45,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -60,8 +61,8 @@ public class RegisterView{
     private JTextField      firstName;
     private JTextField      lastName;
     private JTextField      registerEmail;
-    private JTextField      registerPassword;
-    private JTextField      registerConfirmPassword;
+    private JPasswordField  registerPassword;
+    private JPasswordField  registerConfirmPassword;
     private AuthController  controllerListener;
     private JLabel          errorLabel;
     public  TopBar          topBar;
@@ -234,20 +235,20 @@ public class RegisterView{
             registerPanel.add(Box.createRigidArea(new Dimension(0, 5)));
             
             //Create and add password JTextField            
-            registerPassword = new JTextField(" Password");
-            registerPassword.setFont(roboto.deriveFont(Font.PLAIN, 12f));
+            registerPassword = new JPasswordField(" Password");
+            registerPassword.setToolTipText("Password");
             registerPassword.setForeground(Color.GRAY);
             registerPassword.addFocusListener(new FocusListener() {
                 @Override
                 public void focusGained(FocusEvent e) {
-                    if (registerPassword.getText().equals(" Password")) {
+                    if (new String(registerPassword.getPassword()).equals(" Password")) {
                         registerPassword.setText("");
                         registerPassword.setForeground(Color.BLACK);
                     }
                 }
                 @Override
                 public void focusLost(FocusEvent e) {
-                    if (registerPassword.getText().isEmpty()) {
+                    if (new String(registerPassword.getPassword()).isEmpty()) {
                         registerPassword.setForeground(Color.GRAY);
                         registerPassword.setText(" Password");
                     }
@@ -260,22 +261,22 @@ public class RegisterView{
             registerPanel.add(Box.createRigidArea(new Dimension(0, 5)));
             
             //Create and add confirm password JTextField            
-            registerConfirmPassword = new JTextField(" Confirm Password");
-            registerConfirmPassword.setFont(roboto.deriveFont(Font.PLAIN, 12f));
+            registerConfirmPassword = new JPasswordField(" Password");
+            registerConfirmPassword.setToolTipText("Confirm Password");
             registerConfirmPassword.setForeground(Color.GRAY);
             registerConfirmPassword.addFocusListener(new FocusListener() {
                 @Override
                 public void focusGained(FocusEvent e) {
-                    if (registerConfirmPassword.getText().equals(" Confirm Password")) {
+                    if (new String(registerConfirmPassword.getPassword()).equals(" Password")) {
                         registerConfirmPassword.setText("");
                         registerConfirmPassword.setForeground(Color.BLACK);
                     }
                 }
                 @Override
                 public void focusLost(FocusEvent e) {
-                    if (registerConfirmPassword.getText().isEmpty()) {
+                    if (new String(registerConfirmPassword.getPassword()).isEmpty()) {
                         registerConfirmPassword.setForeground(Color.GRAY);
-                        registerConfirmPassword.setText(" Confirm Password");
+                        registerConfirmPassword.setText(" Password");
                     }
                 }
                 });           
@@ -360,8 +361,8 @@ public class RegisterView{
         data.put("first_name", firstName.getText());
         data.put("last_name", lastName.getText());
         data.put("email", registerEmail.getText());
-        data.put("password", registerPassword.getText());
-        data.put("password_confirmation", registerConfirmPassword.getText());
+        data.put("password", new String(registerPassword.getPassword()));
+        data.put("password_confirmation", new String(registerConfirmPassword.getPassword()));
         
         return data;
     }

@@ -24,7 +24,6 @@
 package com.cct.artgallery.public_users;
 
 import com.cct.artgallery.admin.*;
-import com.cct.artgallery.admin.custom_table.ElementList;
 import com.cct.artgallery.auth.AuthController;
 import com.cct.artgallery.public_users.custom_table.PublicElementList;
 import com.cct.artgallery.utils.UserDetail;
@@ -77,16 +76,21 @@ public class PublicController implements ActionListener{
                 publicView.updateContent(e.getActionCommand());
                 getLikedPieces();
                 break;
+            case "profileMenu":
+                menu.setActive(e.getActionCommand());
+                publicView.updateContent(e.getActionCommand());
+                getProfile();
+                break;
+            case "updateProfile":
+                updateProfile();
+                break;
             case "logout":
                 publicView.dispose();
                 UserDetail.logout();
                 authController.openLogin();
                 break;
-            case "addFileArtPiece":
-                getFileArtPiece();
-                break;
-            case "addFileArtist":
-                getFileArtist();
+            case "addFileProfile":
+                getFileProfile();
                 break;
             case "like":
                 likeArtPiece();
@@ -201,6 +205,35 @@ public class PublicController implements ActionListener{
                         JSONObject artist = responseData.getJSONObject(i);
                         artistList.addElement(artist);
                     }
+                    
+                    break;
+                default:
+                    int status = response.getInt("status");
+                    String responseMessage = "Error " + status + ": Please try again later.";
+                    //publicView.getArtistPanel().showMessage(responseMessage, true);
+                    System.out.println(responseMessage);
+                    break;
+            }
+            publicView.topBar.setLoading(false);
+        }).start();
+        
+    }
+    
+    /**
+     * Request Profile to the model and populates the form in the View.
+     */
+    private void getProfile(){
+        publicView.topBar.setLoading(true);
+
+        new Thread(() -> {
+            JSONObject response = PublicModel.getProfile();
+
+            switch (response.getInt("status")) {
+                case 200:
+                    //Populate the ArtPieceList with the data from the model.
+                    JSONObject responseData = response.getJSONObject("data");
+                    
+                    publicView.getProfilePanel().setUpdateElement(responseData);
                     
                     break;
                 default:
@@ -380,7 +413,7 @@ public class PublicController implements ActionListener{
     /**
      * Ask user for a image file and store the image on memory.
      */
-    private void getFileArtPiece(){
+    private void getFileProfile(){
         JFileChooser fileChooser = new JFileChooser();
         
         //Filter to choose images.
@@ -396,32 +429,9 @@ public class PublicController implements ActionListener{
         String filename=fileChooser.getSelectedFile().getName();
         
         //Store values in the Panel
-        //publicView.getArtPiecesPanel().setFilePath(path);
-        //publicView.getArtPiecesPanel().setFileName(filename);
+        publicView.getProfilePanel().setFilePath(path);
+        publicView.getProfilePanel().setFileName(filename);
         
-    }
-    
-     /**
-     * Ask user for a image file and store the image on memory.
-     */
-    private void getFileArtist(){
-        JFileChooser fileChooser = new JFileChooser();
-        
-        //Filter to choose images.
-        FileFilter imageFilter = new FileNameExtensionFilter(
-            "Image files", ImageIO.getReaderFileSuffixes());
-        
-        fileChooser.setFileFilter(imageFilter);
-        // Open the save dialog 
-        fileChooser.showSaveDialog(null);
-        
-        //Get Path and name
-        String path=fileChooser.getSelectedFile().getAbsolutePath();
-        String filename=fileChooser.getSelectedFile().getName();
-        
-        //Store values in the Panel
-        //publicView.getArtistPanel().setFilePath(path);
-        //publicView.getArtistPanel().setFileName(filename);
     }
     
     /**
@@ -504,6 +514,37 @@ public class PublicController implements ActionListener{
                     //adminView.getUserPanel().showMessage(responseMessage, false);
                     publicView.updateContent("favMenu");
                     getLikedPieces();
+                    break;
+                default:
+                    responseMessage = "Error " + status + ": Please try again later.";
+                    //adminView.getUserPanel().showMessage(responseMessage, true);
+                    break;
+            }
+            
+            System.out.println(responseMessage);
+            publicView.topBar.setLoading(false);
+        }).start();
+        
+    }
+    
+    /**
+     * Update user profile
+     */
+    private void updateProfile(){
+        JSONObject data = publicView.getProfilePanel().getAddData();
+        System.out.println(data);
+        publicView.topBar.setLoading(true);
+        
+        new Thread(() -> {
+            JSONObject response = PublicModel.updateProfile(data);
+            int status = response.getInt("status");
+            String responseMessage;
+
+            switch (status) {
+                case 200:
+                    responseMessage = "Profile updated successfully.";
+                    //adminView.getUserPanel().showMessage(responseMessage, false);
+                    getProfile();
                     break;
                 default:
                     responseMessage = "Error " + status + ": Please try again later.";

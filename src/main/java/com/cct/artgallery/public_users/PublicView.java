@@ -48,7 +48,7 @@ public class PublicView {
     private     PublicArtPiecePanel     artPiecePanel;
     private     PublicFavouritePanel    favPanel;
     private     PublicArtistPanel       artistPanel;
-    private     UserPanel               userPanel;
+    private     PublicProfilePanel      userPanel;
     
     public PublicView(PublicController controller, MenuPublic menu){
         this.controllerListener = controller;
@@ -100,6 +100,9 @@ public class PublicView {
                 break;
             case "favMenu":
                 updateFavouritePanel();
+                break;
+            case "profileMenu":
+                updateProfilePanel();
                 break;
             default:
                 updateArtPiecePanel();
@@ -162,7 +165,23 @@ public class PublicView {
         this.favPanel = new PublicFavouritePanel(controllerListener);
         content.add(favPanel);
     }
-    
+     /**
+     * Create new profile panel and store it in the attribute.
+     */
+    private void updateProfilePanel(){
+        window.getContentPane().remove(1);
+        //Content Panel which contains menu and content.
+        JPanel content = new JPanel();
+        content.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        window.add(content);
+
+        //Add menu left to the left content panel.
+        content.add(this.menu);
+
+        //Add Favourite as content to the right panel. 
+        this.userPanel = new PublicProfilePanel(controllerListener);
+        content.add(userPanel);
+    }   
     
     /**
      * Dispose Administrator JFrame
@@ -199,7 +218,7 @@ public class PublicView {
      * 
      * @return ElementList with all the active elements in the Panel Art Pieces. 
      */
-    public UserPanel getUserPanel(){
+    public PublicProfilePanel getProfilePanel(){
         return userPanel;
     }
 }
