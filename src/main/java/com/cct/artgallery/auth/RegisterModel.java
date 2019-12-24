@@ -100,6 +100,7 @@ public class RegisterModel {
                 while((line = reader.readLine()) != null){
                     responseContent.append(line);
                 }
+                System.out.println(responseContent);
                 reader.close();
             }
             else{

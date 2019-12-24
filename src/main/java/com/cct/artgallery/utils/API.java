@@ -39,7 +39,7 @@ public enum API
     ADMIN("users/admin/");
  
     private final String envEndPoint;
-    private final String HOST = "http://localhost:8000/";
+    private final String HOST = "http://api.kmpus.io/";
  
     API(String envEndPoint) {
         this.envEndPoint = envEndPoint;
