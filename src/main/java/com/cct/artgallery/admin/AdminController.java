@@ -23,13 +23,12 @@
  */
 package com.cct.artgallery.admin;
 
-import com.cct.artgallery.admin.CustomTable.ElementList;
+import com.cct.artgallery.admin.custom_table.ElementList;
 import com.cct.artgallery.auth.AuthController;
 import com.cct.artgallery.utils.UserDetail;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import javax.imageio.ImageIO;

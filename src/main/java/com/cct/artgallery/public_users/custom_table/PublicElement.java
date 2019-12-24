@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.cct.artgallery.admin.CustomTable;
+package com.cct.artgallery.public_users.custom_table;
 
 import com.cct.artgallery.utils.CustomFont;
 import java.awt.Dimension;
@@ -37,11 +37,11 @@ import org.json.JSONObject;
  *
  * @author Francisco Olivares
  */
-   public class Element extends JPanel{
+   public class PublicElement extends JPanel{
         private final JSONObject element;
         
         @SuppressWarnings("OverridableMethodCallInConstructor")
-        public Element(JSONObject element, String type){
+        public PublicElement(JSONObject element, String type){
             this.element = element;
             
             this.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -49,13 +49,12 @@ import org.json.JSONObject;
             CustomFont customFont = new CustomFont();
             Font roboto = customFont.getRoboto();
             
-            if(type.equals("artPiece")){
-                
+            if(type.equals("artPiece") || type.equals("artPieceFav")){
                 String artPieceName = element.getString("name");
                 JLabel name = new JLabel(artPieceName);
                 name.setFont(roboto.deriveFont(Font.PLAIN, 10f));
-                name.setPreferredSize(new Dimension(250, 20));
-                name.setMaximumSize(new Dimension(250, 20));
+                name.setPreferredSize(new Dimension(200, 20));
+                name.setMaximumSize(new Dimension(200, 20));
                 this.add(name);
                 
                 String categoryName = element.getJSONObject("category").getString("name");
@@ -69,8 +68,8 @@ import org.json.JSONObject;
                 String artistLastName = element.getJSONObject("artist").getString("last_name");
                 JLabel artist = new JLabel(artistFirstName + " " + artistLastName);
                 artist.setFont(roboto.deriveFont(Font.PLAIN, 10f));
-                artist.setPreferredSize(new Dimension(200, 20));
-                artist.setMaximumSize(new Dimension(200, 20));
+                artist.setPreferredSize(new Dimension(180, 20));
+                artist.setMaximumSize(new Dimension(180, 20));
                 this.add(artist);
                 
                 Double priceValue = element.getDouble("price");
@@ -78,8 +77,8 @@ import org.json.JSONObject;
                 String priceFormat = df.format(priceValue).replace(",", ".");
                 JLabel price = new JLabel(priceFormat, SwingConstants.RIGHT);
                 price.setFont(roboto.deriveFont(Font.PLAIN, 10f));
-                price.setPreferredSize(new Dimension(100, 20));
-                price.setMaximumSize(new Dimension(100, 20));
+                price.setPreferredSize(new Dimension(90, 20));
+                price.setMaximumSize(new Dimension(90, 20));
                 this.add(price);
                 
             }
@@ -89,8 +88,8 @@ import org.json.JSONObject;
                 String artistLastName = element.getString("last_name");
                 JLabel name = new JLabel(artistFirstName + " " + artistLastName);
                 name.setFont(roboto.deriveFont(Font.PLAIN, 10f));
-                name.setPreferredSize(new Dimension(250, 20));
-                name.setMaximumSize(new Dimension(250, 20));
+                name.setPreferredSize(new Dimension(200, 20));
+                name.setMaximumSize(new Dimension(200, 20));
                 this.add(name);
                 
                 String websiteName = element.getString("website");
@@ -103,32 +102,8 @@ import org.json.JSONObject;
                 String emailName = element.getString("email");
                 JLabel email = new JLabel(emailName);
                 email.setFont(roboto.deriveFont(Font.PLAIN, 10f));
-                email.setPreferredSize(new Dimension(250, 20));
-                email.setMaximumSize(new Dimension(250, 20));
-                this.add(email);
-            }
-            
-            if(type.equals("user")){
-                String userFirstName = element.getString("first_name");
-                String userLastName = element.getString("last_name");
-                JLabel name = new JLabel(userFirstName + " " + userLastName);
-                name.setFont(roboto.deriveFont(Font.PLAIN, 10f));
-                name.setPreferredSize(new Dimension(250, 20));
-                name.setMaximumSize(new Dimension(250, 20));
-                this.add(name);
-                
-                String usernameName = element.getString("username");
-                JLabel username = new JLabel(usernameName);
-                username.setFont(roboto.deriveFont(Font.PLAIN, 10f));
-                username.setPreferredSize(new Dimension(200, 20));
-                username.setMaximumSize(new Dimension(200, 20));
-                this.add(username);
-                
-                String emailName = element.getString("email");
-                JLabel email = new JLabel(emailName);
-                email.setFont(roboto.deriveFont(Font.PLAIN, 10f));
-                email.setPreferredSize(new Dimension(250, 20));
-                email.setMaximumSize(new Dimension(250, 20));
+                email.setPreferredSize(new Dimension(200, 20));
+                email.setMaximumSize(new Dimension(200, 20));
                 this.add(email);
             }
         }

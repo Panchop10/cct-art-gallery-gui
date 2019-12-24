@@ -75,7 +75,7 @@ public class LoginModel {
             
             //Create body as JSONObject
             JSONObject jsonData = new JSONObject();
-            jsonData.put("email", "pancho1990@live.cl");
+            jsonData.put("email", "rohen5@cct.ie");
             jsonData.put("password", "v2oke83j");
             //jsonData.put("email", userEmail);
             //jsonData.put("password", userPassword);

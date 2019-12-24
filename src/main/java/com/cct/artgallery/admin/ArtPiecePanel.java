@@ -23,7 +23,7 @@
  */
 package com.cct.artgallery.admin;
 
-import com.cct.artgallery.admin.CustomTable.ElementList;
+import com.cct.artgallery.admin.custom_table.ElementList;
 import com.cct.artgallery.utils.CustomFont;
 import java.awt.BorderLayout;
 import java.awt.Color;

@@ -24,6 +24,7 @@
 package com.cct.artgallery.auth;
 
 import com.cct.artgallery.admin.AdminController;
+import com.cct.artgallery.public_users.PublicController;
 import com.cct.artgallery.utils.UserDetail;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -112,6 +113,10 @@ public class AuthController implements ActionListener{
                         if(UserDetail.isAdmin()){
                             loginView.hide();
                             new AdminController(this);
+                        }
+                        else{
+                            loginView.hide();
+                            new PublicController(this);
                         }
                         break;
                     case 401:

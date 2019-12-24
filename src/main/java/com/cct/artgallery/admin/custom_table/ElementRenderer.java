@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.cct.artgallery.admin.CustomTable;
+package com.cct.artgallery.admin.custom_table;
 
 import com.cct.artgallery.admin.AdminController;
 import java.awt.Color;
@@ -54,15 +54,19 @@ import javax.swing.ListCellRenderer;
             Component component = (Component) value;
                if (isSelected){
                    component.setBackground(new Color(241, 164, 66));
-                   if(this.type.equals("artPiece")){
-                       parentController.selectArtPiece(index);
-                   }
-                   else if(this.type.equals("artist")){
-                       parentController.selectArtist(index);
-                   }
-                   else if(this.type.equals("user")){
-                       parentController.selectUser(index);
-                   }
+                switch (this.type) {
+                    case "artPiece":
+                        parentController.selectArtPiece(index);
+                        break;
+                    case "artist":
+                        parentController.selectArtist(index);
+                        break;
+                    case "user":
+                        parentController.selectUser(index);
+                        break;
+                    default:
+                        break;
+                }
                    
                } else {
                    component.setBackground(Color.WHITE);

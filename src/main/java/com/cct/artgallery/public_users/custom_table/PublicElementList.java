@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.cct.artgallery.admin.CustomTable;
+package com.cct.artgallery.public_users.custom_table;
 
-import com.cct.artgallery.admin.AdminController;
+import com.cct.artgallery.public_users.PublicController;
 import java.awt.BorderLayout;
 import static javax.swing.BorderFactory.createEmptyBorder;
 import javax.swing.DefaultListModel;
@@ -36,16 +36,16 @@ import org.json.JSONObject;
  *
  * @author Francisco Olivares
  */
-public class ElementList extends JPanel{
-    private final DefaultListModel<Element> listModel = new DefaultListModel<>();
-    private final JList<Element>            jList     = new JList<>(listModel);
-    private final JScrollPane               spList    = new JScrollPane(jList);
-    private final ElementRenderer           render;
-    private final String                    type;
+public class PublicElementList extends JPanel{
+    private final DefaultListModel<PublicElement> listModel = new DefaultListModel<>();
+    private final JList<PublicElement>            jList     = new JList<>(listModel);
+    private final JScrollPane                     spList    = new JScrollPane(jList);
+    private final PublicElementRenderer           render;
+    private final String                          type;
 
     @SuppressWarnings("OverridableMethodCallInConstructor")
-     public ElementList(AdminController parentController, String type){
-        this.render = new ElementRenderer(parentController, type);
+     public PublicElementList(PublicController parentController, String type){
+        this.render = new PublicElementRenderer(parentController, type);
         this.type = type;
         
         //JList properties
@@ -57,14 +57,14 @@ public class ElementList extends JPanel{
         
         
         this.setLayout(new BorderLayout());
-        this.add(spList,BorderLayout.CENTER);   
+        this.add(spList,BorderLayout.CENTER);
      }
 
      public void addElement(JSONObject newElement){
-        listModel.addElement(new Element(newElement, this.type));
+        listModel.addElement(new PublicElement(newElement, this.type));
      }
      
-     public DefaultListModel<Element> getListModel(){
+     public DefaultListModel<PublicElement> getListModel(){
          return listModel;
      }
 }
